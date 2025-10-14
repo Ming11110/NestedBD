@@ -39,7 +39,7 @@ def update_xml_file_SA(xml_path, new_data_xml, new_trait_xml, output_path=None):
     )
 
     # Replace the old trait section
-    start_tag = '<trait id="dateTrait.t:bears" spec="beast.evolution.tree.TraitSet" traitname="date-backward">'
+    start_tag = '<trait id="dateTrait.t:bears" spec="beast.base.evolution.tree.TraitSet" traitname="date-backward">'
     end_tag = '<taxa id="TaxonSet.bears" spec="TaxonSet">'
     start_index = xml_content.find(start_tag)
     end_index = xml_content.find(end_tag, start_index) + len(end_tag)

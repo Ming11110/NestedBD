@@ -1,11 +1,11 @@
-package beast.evolution.errormodel;
+package beast.base.evolution.errormodel;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.parameter.RealParameter;
-import beast.evolution.datatype.DataType;
-import beast.evolution.datatype.IntegerData;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.core.Input.Validate;
+import beast.base.core.parameter.RealParameter;
+import beast.base.evolution.datatype.DataType;
+import beast.base.evolution.datatype.IntegerData;
 
 @Description("Negative Binomial error model with parameters as success probabilities")
 public class NormalErrorModel extends ErrorModel {

@@ -1,21 +1,21 @@
-package beast.evolution.likelihood;
+package beast.base.evolution.likelihood;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.evolution.alignment.Alignment;
-import beast.evolution.datatype.IntegerData;
-import beast.evolution.tree.Node;
-import beast.evolution.errormodel.ErrorModel;
-import beast.evolution.errormodel.poissonErrorModel;
-import beast.evolution.errormodel.readcountErrorModel;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.evolution.alignment.Alignment;
+import beast.base.evolution.datatype.IntegerData;
+import beast.base.evolution.tree.Node;
+import beast.base.evolution.errormodel.ErrorModel;
+import beast.base.evolution.errormodel.poissonErrorModel;
+import beast.base.evolution.errormodel.readcountErrorModel;
 @Description("Tree likelihood calculation using DiploidOriginLikelihood with error models")
 public class DiploidOriginLikelihoodWithError extends DiploidOriginLikelihood {
 
-	final public Input<beast.evolution.errormodel.ErrorModel> errorModelInput = new Input<>("errorModel", "error model to use for leaf partials");
+	final public Input<beast.base.evolution.errormodel.ErrorModel> errorModelInput = new Input<>("errorModel", "error model to use for leaf partials");
 	final public Input<String> weight = new Input<>("weight", "weight for segment, required for readcountErrorModel");
 	protected ErrorModel errorModel;
 	
@@ -29,7 +29,7 @@ public class DiploidOriginLikelihoodWithError extends DiploidOriginLikelihood {
 			throw new IllegalArgumentException("Error Model is required");
 		}	
 		super.m_useTipLikelihoods.setValue(useTipLikelihoods, this);
-		super.implementationInput.setValue("beast.evolution.likelihood.DiploidOriginLikelihood", this);
+		super.implementationInput.setValue("beast.base.evolution.likelihood.DiploidOriginLikelihood", this);
 		super.initAndValidate();
 	}
 

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><beast beautitemplate='Standard' beautistatus='' namespace="beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood" version="2.0">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><beast beautitemplate='Standard' beautistatus='' namespace="beast.core:beast.base.evolution.alignment:beast.base.evolution.tree.coalescent:beast.base.core.util:beast.base.evolution.nuc:beast.base.evolution.operators:beast.base.evolution.sitemodel:beast.base.evolution.substitutionmodel:beast.base.evolution.likelihood" version="2.0">
 
 
 <data id="bears" name="alignment" dataType="integer">
@@ -7,22 +7,22 @@
 </sequence>
 </data>
 
-<map name="Uniform">beast.math.distributions.Uniform</map>
-<map name="Exponential">beast.math.distributions.Exponential</map>
-<map name="LogNormal">beast.math.distributions.LogNormalDistributionModel</map>
-<map name="Normal">beast.math.distributions.Normal</map>
-<map name="Beta">beast.math.distributions.Beta</map>
-<map name="Gamma">beast.math.distributions.Gamma</map>
-<map name="LaplaceDistribution">beast.math.distributions.LaplaceDistribution</map>
-<map name="prior">beast.math.distributions.Prior</map>
-<map name="InverseGamma">beast.math.distributions.InverseGamma</map>
-<map name="OneOnX">beast.math.distributions.OneOnX</map>
+<map name="Uniform">beast.base.math.distributions.Uniform</map>
+<map name="Exponential">beast.base.math.distributions.Exponential</map>
+<map name="LogNormal">beast.base.math.distributions.LogNormalDistributionModel</map>
+<map name="Normal">beast.base.math.distributions.Normal</map>
+<map name="Beta">beast.base.math.distributions.Beta</map>
+<map name="Gamma">beast.base.math.distributions.Gamma</map>
+<map name="LaplaceDistribution">beast.base.math.distributions.LaplaceDistribution</map>
+<map name="prior">beast.base.math.distributions.Prior</map>
+<map name="InverseGamma">beast.base.math.distributions.InverseGamma</map>
+<map name="OneOnX">beast.base.math.distributions.OneOnX</map>
 
 
 <run id="mcmc" spec="beast.coupledMCMC.CoupledMCMC" chainLength="80000000" chains="4" target="0.234" logHeatedChains="true" deltaTemperature="0.1" optimise="true" resampleEvery="1000" >
     <state id="state" storeEvery="20">
         <tree id="Tree.t:bears" name="stateNode">
-            <trait id="dateTrait.t:bears" spec="beast.evolution.tree.TraitSet" traitname="date-backward">
+            <trait id="dateTrait.t:bears" spec="beast.base.evolution.tree.TraitSet" traitname="date-backward">
     cell1=0.0,
     
                     <taxa id="TaxonSet.bears" spec="TaxonSet">
@@ -43,7 +43,7 @@
 		<parameter estimate="false" id="OrigTime"  name="stateNode" value = "1.0"/>
     </state>
 
-    <init id="RandomTree.t:bears" spec="beast.evolution.tree.RandomTree" estimate="false" initial="@Tree.t:bears" taxa="@bears">
+    <init id="RandomTree.t:bears" spec="beast.base.evolution.tree.RandomTree" estimate="false" initial="@Tree.t:bears" taxa="@bears">
         <populationModel id="ConstantPopulation0.t:bears" spec="ConstantPopulation">
             <parameter id="randomPopSize.t:bears" name="popSize">1.0</parameter>
         </populationModel>
@@ -52,7 +52,7 @@
 
     <distribution id="posterior" spec="util.CompoundDistribution">
         <distribution id="prior" spec="util.CompoundDistribution">
-            <distribution id="FBD.t:bears" spec="beast.evolution.speciation.SABirthDeathModel" conditionOnRhoSampling="true" diversificationRate="@diversificationRateFBD.t:bears" origin="@originFBD.t:bears" samplingProportion="@samplingProportionFBD.t:bears" tree="@Tree.t:bears" turnover="@turnoverFBD.t:bears">
+            <distribution id="FBD.t:bears" spec="beast.base.evolution.speciation.SABirthDeathModel" conditionOnRhoSampling="true" diversificationRate="@diversificationRateFBD.t:bears" origin="@originFBD.t:bears" samplingProportion="@samplingProportionFBD.t:bears" tree="@Tree.t:bears" turnover="@turnoverFBD.t:bears">
                 <parameter id="rFBD.t:bears" lower="0.0" name="removalProbability" upper="1.0">0.0</parameter>
                 <parameter id="rhoFBD.t:bears" estimate="false" lower="0.0" name="rho" upper="1.0">1.0</parameter>
             </distribution>
@@ -78,7 +78,7 @@
             <x id="RRateChanges" spec="util.Sum">
                 <arg idref="Indicators"/>
             </x>
-            <distr id="Poisson.0" spec="beast.math.distributions.Poisson">
+            <distr id="Poisson.0" spec="beast.base.math.distributions.Poisson">
                 <parameter id="RealParameter.3" spec="parameter.RealParameter" estimate="false" name="lambda">0.6931471805599453</parameter>
             </distr>
         </prior>
@@ -90,12 +90,12 @@
         </prior>
         </distribution>
         <distribution id="likelihood" spec="util.CompoundDistribution">
-            <distribution id="treeLikelihood.bears" spec="beast.evolution.likelihood.DiploidOriginLikelihood" data="@bears" tree="@Tree.t:bears" nstates = "10" origtime = "@OrigTime">
+            <distribution id="treeLikelihood.bears" spec="beast.base.evolution.likelihood.DiploidOriginLikelihood" data="@bears" tree="@Tree.t:bears" nstates = "10" origtime = "@OrigTime">
 			<siteModel id="SiteModel" spec="SiteModel">
-				<substModel id="BD" spec="beast.evolution.substitutionmodel.BD" nstate = "10" >
+				<substModel id="BD" spec="beast.base.evolution.substitutionmodel.BD" nstate = "10" >
 			</substModel>
 			</siteModel>
-            <branchRateModel id="RandomLocalClock" spec="beast.evolution.branchratemodel.RandomLocalClockModel" clock.rate="@meanClockRate" indicators="@Indicators" rates="@clockrates" tree="@Tree.t:bears"/>
+            <branchRateModel id="RandomLocalClock" spec="beast.base.evolution.branchratemodel.RandomLocalClockModel" clock.rate="@meanClockRate" indicators="@Indicators" rates="@clockrates" tree="@Tree.t:bears"/>
             </distribution>
         </distribution>
     </distribution>
@@ -141,7 +141,7 @@
         <log idref="likelihood"/>
         <log idref="prior"/>
         <log idref="treeLikelihood.bears"/>
-        <log id="TreeHeight.t:bears" spec="beast.evolution.tree.TreeHeightLogger" tree="@Tree.t:bears"/>
+        <log id="TreeHeight.t:bears" spec="beast.base.evolution.tree.TreeHeightLogger" tree="@Tree.t:bears"/>
         <log idref="ucldMean.c:bears"/>
         <log idref="ucldStdev.c:bears"/>
         <log idref="FBD.t:bears"/>
@@ -149,7 +149,7 @@
         <log idref="diversificationRateFBD.t:bears"/>
         <log idref="turnoverFBD.t:bears"/>
         <log idref="samplingProportionFBD.t:bears"/>
-        <log id="SACountFBD.t:bears" spec="beast.evolution.tree.SampledAncestorLogger" tree="@Tree.t:bears"/>
+        <log id="SACountFBD.t:bears" spec="beast.base.evolution.tree.SampledAncestorLogger" tree="@Tree.t:bears"/>
     </logger>
 
     <logger id="screenlog" logEvery="10000">
@@ -160,7 +160,7 @@
     </logger>
 
     <logger id="treelog.t:bears" fileName="KTN132_SA.trees" logEvery="10000" mode="tree">
-        <log id="TreeWithMetaDataLogger.t:bears" spec="beast.evolution.tree.TreeWithMetaDataLogger" branchratemodel="@RandomLocalClock" tree="@Tree.t:bears"/>
+        <log id="TreeWithMetaDataLogger.t:bears" spec="beast.base.evolution.tree.TreeWithMetaDataLogger" branchratemodel="@RandomLocalClock" tree="@Tree.t:bears"/>
     </logger>
 
 </run>

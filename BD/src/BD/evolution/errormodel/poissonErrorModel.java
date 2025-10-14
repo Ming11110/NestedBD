@@ -1,18 +1,19 @@
-package beast.evolution.errormodel;
-import org.apache.commons.math.special.Gamma;
+package beast.base.evolution.errormodel;
+import org.apache.commons.math.distribution.PoissonDistributionImpl;
 import java.lang.Math;
 import java.util.Arrays;
 
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.parameter.RealParameter;
-import beast.evolution.datatype.DataType;
-import beast.evolution.datatype.IntegerData;
+import beast.base.core.Input;
+import beast.base.core.Input.Validate;
+import beast.base.core.parameter.BooleanParameter;
+import beast.base.core.parameter.RealParameter;
+import beast.base.evolution.datatype.DataType;
+import beast.base.evolution.datatype.IntegerData;
+import beast.base.math.distributions.Poisson;
 
-public class readcountErrorModel extends ErrorModel{
+public class poissonErrorModel extends ErrorModel{
 	public Input<RealParameter> nstate = new Input<RealParameter>("nstate", "same as what in BD model", Validate.REQUIRED);
-	final public Input<RealParameter> theta = new Input<>("theta","inverse dispersion of negative binomail distribution", Input.Validate.REQUIRED);
-	final public Input<RealParameter> smoothing = new Input<>("smoothing","inverse dispersion of negative binomail distribution");
+	final public Input<RealParameter> smoothing = new Input<>("smoothing","smoothing parameter");
 	final public Input<RealParameter> ploidy = new Input<>("ploidy","ploidy level of genome");
 	protected static int nrOfStates;
 
@@ -22,12 +23,6 @@ public class readcountErrorModel extends ErrorModel{
 		if (nstate.get() == null) {
             throw new IllegalArgumentException("number of states to consider is required");
         }
-		if (theta.get() == null) {
-			throw new IllegalArgumentException("inverse dispersion of negative binomail distribution is required");
-		}
-		if (theta.get().getValue() == 0) {
-			throw new IllegalArgumentException("inverse dispersion cannot be zero");
-		}
 	};
 	public double getProbability(int nread, int copynumber, double w, double ploidy, int totalread) {
 		// TODO Auto-generated method stub
@@ -37,30 +32,19 @@ public class readcountErrorModel extends ErrorModel{
 			}
 			return 0.0;
 		}
-		double theta_val = theta.get().getValue();
-		//expected read count for the region 
+
+		//mu: expected number of reads at current bin
+		//convert to integer for poisson distribution 
 		//assume expected number of reads to be 1 when copy number is zero to allow sample errors 
 		double mu = totalread * copynumber * w/ploidy;
-		if (mu == 0.0) {
-			mu = 1.0;
+		int mu_int = (int)mu;
+		if (mu_int == 0) {
+
+			mu_int = 1;
 		}
-		double val1 = Gamma.logGamma(nread + theta_val) - Gamma.logGamma(nread + 1) - Gamma.logGamma(theta_val); 
-		double val2 = theta_val * Math.log(theta_val/(theta_val + mu));
-		double val3 = nread * Math.log(mu/(theta_val + mu));
-		//if (val1 > 1) {
-			//System.out.println("val1:" + val1);
-			//System.out.println(Gamma.logGamma(nread + theta_val) - Gamma.logGamma(nread + 1) - Gamma.logGamma(theta_val));
-		//System.out.println("nreads:" + nread + " ,copy number " + copynumber + ", expected reads" + mu + ", prob:" + Math.exp(val1 + val2 + val3));
-		//}
-		//System.out.println(val2 + val3);
-		//if (Double.isNaN(Math.exp(val1 + val2 + val3))){
-			//System.out.println("nreads:" + nread + " ,copy number " + copynumber + ", expected reads" + mu + ", prob:" + Math.exp(val1 + val2 + val3));
-		//}
-		double p = Math.exp(val1 + val2 + val3);
-		//if (p == 0 && copynumber != 0){
-			//System.out.println("nreads:" + nread + " ,copy number " + copynumber + ", expected reads" + mu + ", prob:" + Math.exp(val1 + val2 + val3));
-		//}
+		double p = new PoissonDistributionImpl(mu_int).probability(nread);
 		return p;
+
 	}
 	@Override
 	public double[] getProbabilities(int observedState, double w, int trueState) {
@@ -68,7 +52,7 @@ public class readcountErrorModel extends ErrorModel{
         double[] prob = new double[nrOfStates];
         double max_ = 0;
         //double max_copy = 0;
-        double plevel = 2.0;
+        double plevel = 2.5;
         if (ploidy.get() != null){
         	plevel = ploidy.get().getValue();
         }
@@ -88,25 +72,32 @@ public class readcountErrorModel extends ErrorModel{
         	//System.out.println(Arrays.toString(prob));
         }
         //smoothing/unsmoothing
-        double s = 2.0;
+        //System.out.print(observedState);
+    	//System.out.println(Arrays.toString(prob));
+        double s = 1.0;
         if (smoothing.get() != null) {
         	s = smoothing.get().getValue();
         }
-        //if (s != 1.0) {
-        	double sum_ = 0.0;
+    	double sum_ = 0.0;
+    	//normalize probability 
+        if (s != 1.0) {
         	for (int i = 0; i < nrOfStates; i++) {
                 prob[i] = Math.pow(prob[i], s);
                 sum_  += prob[i];
         	}
+        }
+        else {
         	for (int i = 0; i < nrOfStates; i++) {
-                prob[i] = prob[i]/sum_;
+                sum_  += prob[i];
         	}
-        //}
-
+        }
+    	for (int i = 0; i < nrOfStates; i++) {
+            prob[i] = prob[i]/sum_;
+    	}
+    	//System.out.println(Arrays.toString(prob));
         return prob;
     }
-
-
+	
 	@Override
 	public boolean canHandleDataType(DataType dataType) {
 		// TODO Auto-generated method stub
@@ -120,7 +111,7 @@ public class readcountErrorModel extends ErrorModel{
 	}
 	@Override
 	public double[] getProbabilities(int observedState) {
-		throw new IllegalArgumentException("weight is required for read count data, another overloaded version of this method should be selected instead");
+		throw new IllegalArgumentException("Probabilities:weight is required for read count data, another overloaded version of this method should be selected instead");
 	}
 
 

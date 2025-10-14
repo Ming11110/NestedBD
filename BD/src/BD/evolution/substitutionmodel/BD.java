@@ -1,14 +1,14 @@
   
-package beast.evolution.substitutionmodel;
-import beast.evolution.datatype.DataType;
-import beast.evolution.datatype.IntegerData;
-import beast.evolution.tree.Node;
+package beast.base.evolution.substitutionmodel;
+import beast.base.evolution.datatype.DataType;
+import beast.base.evolution.datatype.IntegerData;
+import beast.base.evolution.tree.Node;
 
 import java.util.Arrays;
 
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.parameter.RealParameter;
+import beast.base.core.Input;
+import beast.base.core.Input.Validate;
+import beast.base.core.parameter.RealParameter;
 
 
 public class BD extends SubstitutionModel.Base {
@@ -17,19 +17,19 @@ public class BD extends SubstitutionModel.Base {
 	protected static double[] binom_array;
 
 	public BD() {
-        // this is added to avoid a parsing error inherited from superclass because frequencies are not provided.
+		// this is added to avoid a parsing error inherited from superclass because frequencies are not provided.
 		frequenciesInput.setRule(Validate.OPTIONAL);
-        try {
-            // this call will be made twice when constructed from XML
-            // but this ensures that the object is validly constructed for testing purposes.
-            //System.out.println("Class Constructor");
-        	//System.out.println(nstate.get().getValue());
-            //initAndValidate();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("initAndValidate() call failed when constructing BD()");
-        }
-    }
+		try {
+			// this call will be made twice when constructed from XML
+			// but this ensures that the object is validly constructed for testing purposes.
+			//System.out.println("Class Constructor");
+			//System.out.println(nstate.get().getValue());
+			//initAndValidate();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("initAndValidate() call failed when constructing BD()");
+		}
+	}
 	
 	@Override
     public void initAndValidate() {
