@@ -65,7 +65,8 @@ test -f beast2/build/dist/BD.addon.zip && echo "$FILE exists."
 ```
 ### Installation
 
-NestedBD is implemented as a BEAST2 package, and requires beast2 installation to run.NestedBD is currently not compatible with beast 2.7. 
+NestedBD is implemented as a BEAST2 package, and requires beast2 installation to run.
+This version of NestedBD is currently compatible with beast 2.7. 
 
 #### Installing BEAST2
 Please follow the instruction on http://www.beast2.org/ and download the BEAST2 version for your operating system. Note that this is different to download and build source code of beast2 from GitHub repository. 
