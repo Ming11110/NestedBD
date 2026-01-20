@@ -1,15 +1,15 @@
-package beast.base.evolution.errormodel;
+package BD.evolution.errormodel;
 import org.apache.commons.math.distribution.PoissonDistributionImpl;
 import java.lang.Math;
 import java.util.Arrays;
 
 import beast.base.core.Input;
 import beast.base.core.Input.Validate;
-import beast.base.core.parameter.BooleanParameter;
-import beast.base.core.parameter.RealParameter;
+import beast.base.inference.parameter.BooleanParameter;
+import beast.base.inference.parameter.RealParameter;
 import beast.base.evolution.datatype.DataType;
 import beast.base.evolution.datatype.IntegerData;
-import beast.base.math.distributions.Poisson;
+import beast.base.inference.distribution.Poisson;
 
 public class poissonErrorModel extends ErrorModel{
 	public Input<RealParameter> nstate = new Input<RealParameter>("nstate", "same as what in BD model", Validate.REQUIRED);

@@ -1,9 +1,9 @@
-package beast.base.evolution.errormodel;
+package BD.evolution.errormodel;
 
 import beast.base.core.Description;
 import beast.base.core.Input;
 import beast.base.core.Input.Validate;
-import beast.base.core.parameter.RealParameter;
+import beast.base.inference.parameter.RealParameter;
 import beast.base.evolution.datatype.DataType;
 import beast.base.evolution.datatype.IntegerData;
 

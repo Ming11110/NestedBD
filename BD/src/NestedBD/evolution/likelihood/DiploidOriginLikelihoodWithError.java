@@ -1,4 +1,4 @@
-package beast.base.evolution.likelihood;
+package BD.evolution.likelihood;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -9,13 +9,13 @@ import beast.base.core.Input;
 import beast.base.evolution.alignment.Alignment;
 import beast.base.evolution.datatype.IntegerData;
 import beast.base.evolution.tree.Node;
-import beast.base.evolution.errormodel.ErrorModel;
-import beast.base.evolution.errormodel.poissonErrorModel;
+import BD.evolution.errormodel.ErrorModel;
+import BD.evolution.errormodel.poissonErrorModel;
 import beast.base.evolution.errormodel.readcountErrorModel;
 @Description("Tree likelihood calculation using DiploidOriginLikelihood with error models")
 public class DiploidOriginLikelihoodWithError extends DiploidOriginLikelihood {
 
-	final public Input<beast.base.evolution.errormodel.ErrorModel> errorModelInput = new Input<>("errorModel", "error model to use for leaf partials");
+	final public Input<ErrorModel> errorModelInput = new Input<>("errorModel", "error model to use for leaf partials");
 	final public Input<String> weight = new Input<>("weight", "weight for segment, required for readcountErrorModel");
 	protected ErrorModel errorModel;
 	

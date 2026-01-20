@@ -1,4 +1,4 @@
-package NestedBD.evolution.errormodel;
+package BD.evolution.errormodel;
 
 import beast.base.core.Description;
 import beast.base.core.Input;
@@ -23,7 +23,7 @@ import beast.base.inference.parameter.RealParameter;
  * </p>
  */
 @Description("Discrete Gaussian (Truncated Normal) error model for copy-number data.")
-public class DiscreteGaussianErrorModel extends ErrorModel {
+public class DiscreteGaussianErrorModel extends BD.evolution.errormodel.ErrorModel {
 
     public final Input<RealParameter> sigmaInput =
             new Input<>("sigma",

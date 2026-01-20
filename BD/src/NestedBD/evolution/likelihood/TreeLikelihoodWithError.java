@@ -1,16 +1,16 @@
-package beast.base.evolution.likelihood;
+package BD.evolution.likelihood;
 
 import beast.base.core.Description;
 import beast.base.core.Input;
 import beast.base.evolution.alignment.Alignment;
 import beast.base.evolution.likelihood.TreeLikelihood;
 import beast.base.evolution.tree.Node;
-import beast.base.evolution.errormodel.ErrorModel;
+import BD.evolution.errormodel.ErrorModel;
 
 @Description("Tree likelihood calculation with error models")
 public class TreeLikelihoodWithError extends TreeLikelihood {
 
-    final public Input<beast.base.evolution.errormodel.ErrorModel> errorModelInput = new Input<>("errorModel", "error model to use for partials");
+    final public Input<ErrorModel> errorModelInput = new Input<>("errorModel", "error model to use for partials");
     final public Input<Boolean> useTipsEmpiricalInput = new Input<>("useTipsEmpirical", "use tip ambiguities from data", false);
 
     protected ErrorModel errorModel;

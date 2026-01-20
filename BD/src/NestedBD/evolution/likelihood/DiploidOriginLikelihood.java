@@ -1,17 +1,16 @@
-package beast.base.evolution.likelihood;
-import beast.base.core.Description;
+package BD.evolution.likelihood;
+
 import beast.base.core.Input;
-import beast.base.core.State;
+import beast.base.evolution.likelihood.BeerLikelihoodCore;
+import beast.base.evolution.likelihood.BeerLikelihoodCore4;
+import beast.base.evolution.likelihood.TreeLikelihood;
 import beast.base.core.Input.Validate;
-import beast.base.core.parameter.RealParameter;
-import beast.base.core.util.Log;
+import beast.base.inference.parameter.IntegerParameter;
+import beast.base.inference.parameter.RealParameter;
+import beast.base.core.Log;
 import beast.base.evolution.alignment.Alignment;
-import beast.base.evolution.branchratemodel.BranchRateModel;
 import beast.base.evolution.branchratemodel.StrictClockModel;
-import beast.base.evolution.likelihood.TreeLikelihood.Scaling;
 import beast.base.evolution.sitemodel.SiteModel;
-import beast.base.evolution.substitutionmodel.Frequencies;
-import beast.base.evolution.substitutionmodel.SubstitutionModel;
 import beast.base.evolution.tree.Node;
 import beast.base.evolution.tree.Tree;
 import beast.base.evolution.tree.TreeInterface;
@@ -19,96 +18,108 @@ import beast.base.evolution.tree.TreeInterface;
 import java.util.*;
 
 public class DiploidOriginLikelihood extends TreeLikelihood {
-	public Input<RealParameter> origtime = new Input<RealParameter>("origtime", "time between diploid and tree root");
-	public Input<RealParameter> nstates = new Input<RealParameter>("nstates", "same as what in BD model", Validate.REQUIRED);
+    public Input<RealParameter> origtime = new Input<RealParameter>("origtime", "time between diploid and tree root");
+    public Input<IntegerParameter> nstates = new Input<IntegerParameter>("nstates", "same as what in BD model", Validate.REQUIRED);
     //protected int nrofStates = dataInput.get().getMaxStateCount();
     //protected int nrofPattern = dataInput.get().getPatternCount();
-	//protected int nrofStates = 30;
-	protected int nrofStates;
+    //protected int nrofStates = 30;
+    protected int nrofStates;
     protected static double bd_rate = 0.01;
     protected boolean recalc = true;
-    
-    /* override to avoid beagle*/
+
+    /* Override to avoid BEAGLE */
     @Override
     public void initAndValidate() {
-    	// System.out.println("Likelihood class");
-    	// System.out.println(nstates.get().getValue());
-    	nrofStates = (int)Math.round(nstates.get().getValue());
+        // sanity check: Make sure data is an Alignment
+        if (!(dataInput.get() instanceof Alignment)) {
+            throw new RuntimeException("Expected Alignment as data, not " + dataInput.get().getClass().getName());
+        }
+        Alignment alignment = (Alignment) dataInput.get();
+
         // sanity check: alignment should have same #taxa as tree
-        if (dataInput.get().getTaxonCount() != treeInput.get().getLeafNodeCount()) {
+        if (alignment.getTaxonCount() != treeInput.get().getLeafNodeCount()) {
             throw new IllegalArgumentException("The number of nodes in the tree does not match the number of sequences");
         }
+
+        /**
+         * BEAGLE is disabled here because the current copy-number substitution model
+         * does not provide a rate matrix (Q) or eigen decomposition
+         **/
+        beagle = null;
+        Log.info.println("Skipping BEAGLE for IntegerData - using Java likelihood core");
+
         int nodeCount = treeInput.get().getNodeCount();
         if (!(siteModelInput.get() instanceof SiteModel.Base)) {
-        	throw new IllegalArgumentException("siteModel input should be of type SiteModel.Base");
+            throw new IllegalArgumentException("siteModel input should be of type SiteModel.Base");
         }
-        // System.out.println(nstates.get().getValue());
-        if (nstates.get() == null) {
-            throw new IllegalArgumentException("number of states to consider is required");
-        }
+
+        // Initialize the site and substitution models
         m_siteModel = (SiteModel.Base) siteModelInput.get();
-        //System.out.println(m_siteModel);
-        m_siteModel.setDataType(dataInput.get().getDataType());
-        //System.out.println("DataType");
-        //System.out.println(dataInput.get().getDataType());
+        m_siteModel.setDataType(alignment.getDataType());
         substitutionModel = m_siteModel.substModelInput.get();
-        //System.out.println(substitutionModel);
+
         if (branchRateModelInput.get() != null) {
             branchRateModel = branchRateModelInput.get();
         } else {
             branchRateModel = new StrictClockModel();
         }
+
         m_branchLengths = new double[nodeCount];
         storedBranchLengths = new double[nodeCount];
-        int stateCount = (int)Math.round(nstates.get().getValue());
-        //int stateCount = dataInput.get().getMaxStateCount();
-        //int stateCount = 30;
-        int patterns = dataInput.get().getPatternCount();
+
+
+        // sanity check: nstates
+        if (nstates.get() == null) {
+            throw new IllegalArgumentException("number of states to consider is required");
+        }
+        nrofStates = nstates.get().getValue();
+
+        //Set up the likelihood computation core
+        int stateCount = nrofStates;
+        int patterns = alignment.getPatternCount();
+
         if (stateCount == 4) {
             likelihoodCore = new BeerLikelihoodCore4();
         } else {
             likelihoodCore = new BeerLikelihoodCore(stateCount);
         }
-                String className = getClass().getSimpleName();
 
-        Alignment alignment = dataInput.get();
-
+        // Report which likelihood core is being used
+        String className = getClass().getSimpleName();
         Log.info.println(className + "(" + getID() + ") uses " + likelihoodCore.getClass().getSimpleName());
         Log.info.println("  " + alignment.toString(true));
-        // print startup messages via Log.print*
 
+        // Handle invariant sites
         proportionInvariant = m_siteModel.getProportionInvariant();
         m_siteModel.setPropInvariantIsCategory(false);
         if (proportionInvariant > 0) {
             calcConstantPatternIndices(patterns, stateCount);
         }
 
+        // Initialize base likelihood arrays
         initCore();
 
         patternLogLikelihoods = new double[patterns];
         m_fRootPartials = new double[patterns * stateCount];
         matrixSize = (stateCount + 1) * (stateCount + 1);
-        probabilities = new double[(stateCount+1) * (stateCount+1)];
+        probabilities = new double[(stateCount + 1) * (stateCount + 1)];
         Arrays.fill(probabilities, 1.0);
-        if (dataInput.get().isAscertained) {
+
+        if (alignment.isAscertained) {
             useAscertainedSitePatterns = true;
         }
-        
-        
     }
+
     @Override
     protected boolean requiresRecalculation() {
-    	//final TreeInterface tree = treeInput.get();
+        //final TreeInterface tree = treeInput.get();
         //System.out.println(origtime.get().somethingIsDirty());
         //System.out.println(traverse(tree.getRoot()) != Tree.IS_CLEAN);
         return (origtime.get().somethingIsDirty() | recalc);
-        	
+
         //return true;
     }
-    
-    
-   
-    
+
     /**
      * Calculate the log likelihood of the current state.
      *
@@ -127,12 +138,11 @@ public class DiploidOriginLikelihood extends TreeLikelihood {
         final TreeInterface tree = treeInput.get();
 
         try {
-        	if (traverse(tree.getRoot()) != Tree.IS_CLEAN )
-        		calcLogP();
-        }
-        catch (ArithmeticException e) {
-        	System.out.println("exception occured");
-        	return Double.NEGATIVE_INFINITY;
+            if (traverse(tree.getRoot()) != Tree.IS_CLEAN)
+                calcLogP();
+        } catch (ArithmeticException e) {
+            System.out.println("exception occurred");
+            return Double.NEGATIVE_INFINITY;
         }
         m_nScale++;
         if (logP > 0 || (likelihoodCore.getUseScaling() && m_nScale > X)) {
@@ -158,8 +168,9 @@ public class DiploidOriginLikelihood extends TreeLikelihood {
         return logP;
     }
 
-    
-    void calcLogP() {
+
+    @Override
+    public void calcLogP() {
         logP = 0.0;
         if (useAscertainedSitePatterns) {
             final double ascertainmentCorrection = dataInput.get().getAscertainmentCorrection(patternLogLikelihoods);
@@ -167,21 +178,21 @@ public class DiploidOriginLikelihood extends TreeLikelihood {
                 logP += (patternLogLikelihoods[i] - ascertainmentCorrection) * dataInput.get().getPatternWeight(i);
             }
         } else {
-            for (int i = 0; i< dataInput.get().getPatternCount(); i++) {
+            for (int i = 0; i < dataInput.get().getPatternCount(); i++) {
                 logP += patternLogLikelihoods[i] * dataInput.get().getPatternWeight(i);
                 //System.out.println(patternLogLikelihoods[i]);
             }
         }
     }
-    
+
     /**
      * set leaf partials in likelihood core *
      */
 
     // for testing
 
-    
-    /* Assumes there IS a branch rate model as opposed to traverse() 
+
+    /* Assumes there IS a branch rate model as opposed to traverse()
      * compute the diploid origin likelihood instead of likelihood
      */
     @Override
@@ -202,9 +213,9 @@ public class DiploidOriginLikelihood extends TreeLikelihood {
                 final double jointBranchRate = m_siteModel.getRateForCategory(i, node) * branchRate;
                 substitutionModel.getTransitionProbabilities(node, parent.getHeight(), node.getHeight(), jointBranchRate, probabilities);
                 //if (node.getNr() == 29) {
-                	//System.out.println(node.getNr() + " " + Arrays.toString(probabilities));
+                //System.out.println(node.getNr() + " " + Arrays.toString(probabilities));
                 //}
-                
+
                 likelihoodCore.setNodeMatrix(nodeIndex, i, probabilities);
             }
             update |= Tree.IS_DIRTY;
@@ -230,11 +241,10 @@ public class DiploidOriginLikelihood extends TreeLikelihood {
                 if (update >= Tree.IS_FILTHY) {
                     likelihoodCore.setNodeStatesForUpdate(nodeIndex);
                 }
-                
-                
+
 
                 if (m_siteModel.integrateAcrossCategories()) {
-                	//System.out.println(nodeIndex);
+                    //System.out.println(nodeIndex);
                     likelihoodCore.calculatePartials(childNum1, childNum2, nodeIndex);
                 } else {
                     throw new RuntimeException("Error TreeLikelihood 201: Site categories not supported");
@@ -242,59 +252,58 @@ public class DiploidOriginLikelihood extends TreeLikelihood {
                 }
 
                 if (node.isRoot()) {
-                	//System.out.println("root");
+                    //System.out.println("root");
                     // No parent this is the root of the beast.tree -
                     // calculate the pattern likelihoods
                     final double[] proportions = m_siteModel.getCategoryProportions(node);
                     //System.out.println(node.getNr() + " Proportions" + Arrays.toString(proportions));
                     likelihoodCore.integratePartials(node.getNr(), proportions, m_fRootPartials);
                     //System.out.println(node.getNr() + " m_RootPartials " + Arrays.toString(m_fRootPartials));
-                    if (constantPattern != null) { // && !SiteModel.g_bUseOriginal) {
+                    if (getConstantPattern() != null) { // && !SiteModel.g_bUseOriginal) {
                         proportionInvariant = m_siteModel.getProportionInvariant();
                         // some portion of sites is invariant, so adjust root partials for this
-                        for (final int i : constantPattern) {
+                        for (final int i : getConstantPattern()) {
                             m_fRootPartials[i] += proportionInvariant;
                         }
                     }
 
-                	double distance = origtime.get().getValue();
-                	//System.out.println("DD" + distance);
-                	substitutionModel.getTransitionProbabilities(node, distance, 0.0,  1.0, probabilities);
-                	//System.out.println("probabilitys" + Arrays.toString(probabilities));
+                    double distance = origtime.get().getValue();
+                    //System.out.println("DD" + distance);
+                    substitutionModel.getTransitionProbabilities(node, distance, 0.0, 1.0, probabilities);
+                    //System.out.println("probabilities" + Arrays.toString(probabilities));
                     DipOrigLikelihoods(m_fRootPartials, probabilities, patternLogLikelihoods);
                 }
 
             }
         }
         if (update == 0) {
-        	recalc = false;
+            recalc = false;
         }
         return update;
     } // traverseWithBRM
-    
 
-    
-    
+
     public void DipOrigLikelihoods(double[] partials, double[] transition_prob, double[] outLogLikelihoods) {
-    	
+
         int v = 0;
         //System.out.println("Where");
         //double distance = origtime.get().getValue();
         //System.out.println("DDD" + distance);
-    	//System.out.println(dataInput.get().getPatternCount());
-        for (int k = 0; k <dataInput.get().getPatternCount(); k++) {
+        //System.out.println(dataInput.get().getPatternCount());
+        for (int k = 0; k < dataInput.get().getPatternCount(); k++) {
             //double max_prob =  Double.NEGATIVE_INFINITY;
-            double max_prob =  0;
+            double max_prob = 0;
             for (int i = 0; i < nrofStates; i++) {
-            	//System.out.println(DipOrigProb(i, distance));
-            	//System.out.println(transition_prob[62+i]);
-            	//max_prob = Double.max(max_prob, partials[v]* transition_prob[2 * nrofStates +i]);
-            	max_prob = max_prob + partials[v]* transition_prob[2 * nrofStates +i];
-               if (Double.isNaN(partials[v])){
-                	System.out.println(k);
+                //System.out.println(DipOrigProb(i, distance));
+                //System.out.println(transition_prob[62+i]);
+                //max_prob = Double.max(max_prob, partials[v]* transition_prob[2 * nrofStates +i]);
+                if (Double.isNaN(partials[v])) {
+                    System.out.println(k);
+                } else {
+                    max_prob += partials[v] * transition_prob[2 * nrofStates + i];
                 }
-            	//if (k == dataInput.get().getPatternCount()-1) {
-            		//System.out.println(partials[v]);}
+                //if (k == dataInput.get().getPatternCount()-1) {
+                //System.out.println(partials[v]);}
                 v++;
             }
 
