@@ -6,7 +6,7 @@
  	$Id: build_BD.xml $
  	</description>
  	<!-- set global properties for this build -->
- 	<property name="srcBD" location="src" />
+ 	<property name="srcBD" location="BD/src" />
  	<property name="buildBD" location="build" />
  	<property name="libBD" location="lib" />
  	<property name="release_dir" value="release" />
