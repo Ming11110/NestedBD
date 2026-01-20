@@ -1,4 +1,4 @@
-package BD.evolution.likelihood;
+package NestedBD.evolution.likelihood;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -9,9 +9,9 @@ import beast.base.core.Input;
 import beast.base.evolution.alignment.Alignment;
 import beast.base.evolution.datatype.IntegerData;
 import beast.base.evolution.tree.Node;
-import BD.evolution.errormodel.ErrorModel;
-import BD.evolution.errormodel.poissonErrorModel;
-import beast.base.evolution.errormodel.readcountErrorModel;
+import NestedBD.evolution.errormodel.ErrorModel;
+import NestedBD.evolution.errormodel.poissonErrorModel;
+import NestedBD.evolution.errormodel.readcountErrorModel;
 @Description("Tree likelihood calculation using DiploidOriginLikelihood with error models")
 public class DiploidOriginLikelihoodWithError extends DiploidOriginLikelihood {
 
@@ -20,6 +20,9 @@ public class DiploidOriginLikelihoodWithError extends DiploidOriginLikelihood {
 	protected ErrorModel errorModel;
 	
 	protected boolean useTipLikelihoods = true;
+
+	IntegerData integerData = new IntegerData();
+
 
 	@Override
 	public void initAndValidate() {
@@ -61,7 +64,8 @@ public class DiploidOriginLikelihoodWithError extends DiploidOriginLikelihood {
 		double pattern_weight = 0;
 		int counter = 0;
 		double [] w = new double[nrOfPatterns];
-		if (errorModel instanceof readcountErrorModel || errorModel instanceof poissonErrorModel) {
+		// fixed error model code below to handle all error model classes with IntegerData
+		if (errorModel.canHandleDataType(integerData)) {
 			//equal weights, use only sampled bins 
 			if (weight.get() == null){
 				for (int i = 0; i < nrOfPatterns; i ++) {
@@ -99,7 +103,7 @@ public class DiploidOriginLikelihoodWithError extends DiploidOriginLikelihood {
 		//int t = getTaxonIndex(node.getID(), data); // taxon index
 		//System.out.print(t);
 		int i = 0;
-		if (errorModel instanceof readcountErrorModel || errorModel instanceof poissonErrorModel) {
+		if (errorModel.canHandleDataType(integerData)) {
 			if (weight_mode == 0 | totalread == -1){
 				totalread = 0;
 				for (int p = 0; p < nrOfPatterns; p++) {
@@ -110,7 +114,7 @@ public class DiploidOriginLikelihoodWithError extends DiploidOriginLikelihood {
 		for (int p = 0; p < nrOfPatterns; p++) {
 			int state = data.getPattern(t, p);
 			double[] tipLikelihoods;
-			if (errorModel instanceof readcountErrorModel || errorModel instanceof poissonErrorModel) {
+			if (errorModel.canHandleDataType(integerData)) {
 				tipLikelihoods = errorModel.getProbabilities(state, w[p], totalread);
 				//System.out.println(state);
 				//System.out.println(Arrays.toString(tipLikelihoods));

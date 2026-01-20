@@ -1,7 +1,9 @@
-  
-package beast.base.evolution.substitutionmodel;
+package NestedBD.evolution.substitutionmodel;
+
 import beast.base.evolution.datatype.DataType;
 import beast.base.evolution.datatype.IntegerData;
+import beast.base.evolution.substitutionmodel.EigenDecomposition;
+import beast.base.evolution.substitutionmodel.SubstitutionModel;
 import beast.base.evolution.tree.Node;
 
 import java.util.Arrays;
@@ -13,6 +15,7 @@ import beast.base.inference.parameter.RealParameter;
 
 public class BD extends SubstitutionModel.Base {
 	public Input<RealParameter> nstate = new Input<RealParameter>("nstate", "same as what in BD model", Validate.REQUIRED);
+	public Input<RealParameter> bdRateInput = new Input<>("bdRate", "The birth-death rate (default=1.0)", Validate.OPTIONAL);
 	protected static int nrOfStates;
 	protected static double[] binom_array;
 
@@ -121,10 +124,15 @@ public class BD extends SubstitutionModel.Base {
 	 
 	@Override
 	public void getTransitionProbabilities(Node node, double startTime, double endTime, double rate, double[] matrix) {
+		double bd_rate;
+		if (bdRateInput.get() != null) {
+			bd_rate = bdRateInput.get().getValue();
+		} else {
+			bd_rate = 1.0;
+		}
 		// TODO Auto-generated method stub
 		//assume birth rate = death rate = 1
 		//System.out.println("TRANSITIONPROB");
-		double bd_rate = 1;
 		int index;
 		int i, j;
 		double prob;

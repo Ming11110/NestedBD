@@ -1,4 +1,4 @@
-package BD.evolution.errormodel;
+package NestedBD.evolution.errormodel;
 
 import beast.base.core.Description;
 import beast.base.core.Input;
@@ -74,19 +74,23 @@ public class NegativeBinomialErrorModel extends ErrorModel {
 
     @Override
     public void setupErrorMatrix() {
-
         if (errorMatrix == null) {
             errorMatrix = new double[nrOfStates][nrOfStates];
         }
 
         // For each true CN (columns)
         for (int trueState = 0; trueState < nrOfStates; trueState++) {
-
             double colSum = 0.0;
 
             // For each observed CN (rows)
             for (int obs = 0; obs < nrOfStates; obs++) {
-                double prob = getProbability(obs, trueState);
+                double prob;
+                if (trueState == 0) {
+                    prob = (obs == 0) ? 1.0 : 0.0;
+                } else {
+                    prob = negativeBinomialPMF(obs, trueState);
+                }
+
                 errorMatrix[obs][trueState] = prob;
                 colSum += prob;
             }
@@ -102,17 +106,6 @@ public class NegativeBinomialErrorModel extends ErrorModel {
         }
     }
 
-    @Override
-    public double getProbability(int observedState, int trueState) {
-
-        // True CN = 0 always observed as 0
-        if (trueState == 0) {
-            return (observedState == 0) ? 1.0 : 0.0;
-        }
-
-        // Negative Binomial for true CN > 0
-        return negativeBinomialPMF(observedState, trueState);
-    }
 
     private double negativeBinomialPMF(int observedCN, int trueCN) {
 
@@ -151,19 +144,51 @@ public class NegativeBinomialErrorModel extends ErrorModel {
         }
     }
 
+    /**
+     * Ensure error matrix is up-to-date before use
+     */
+    private void ensureMatrixUpdated() {
+        if (updateMatrix) {
+            setupErrorMatrix();
+            updateMatrix = false;
+        }
+    }
+
+    @Override
+    public double getProbability(int observedState, int trueState) {
+        // Update matrix if needed
+        ensureMatrixUpdated();
+
+        // Validate inputs
+        if (observedState < 0 || observedState >= nrOfStates) {
+            return 0.0;
+        }
+        if (trueState < 0 || trueState >= nrOfStates) {
+            return 0.0;
+        }
+
+        // Return pre-computed value
+        return errorMatrix[observedState][trueState];
+    }
+
     @Override
     public double[] getProbabilities(int observedState) {
+        // Update matrix if needed
+        ensureMatrixUpdated();
 
         double[] p = new double[nrOfStates];
 
+        // Copy from pre-computed matrix
         for (int trueState = 0; trueState < nrOfStates; trueState++) {
-            p[trueState] = getProbability(observedState, trueState);
+            p[trueState] = errorMatrix[observedState][trueState];
         }
+
         return p;
     }
 
     @Override
     public double[] getProbabilities(int observedState, double w, int totalread) {
+        // For discrete Gaussian, we don't use w and totalread
         return getProbabilities(observedState);
     }
 

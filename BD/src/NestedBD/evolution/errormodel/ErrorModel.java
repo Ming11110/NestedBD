@@ -1,4 +1,4 @@
-package BD.evolution.errormodel;
+package NestedBD.evolution.errormodel;
 
 import beast.base.inference.CalculationNode;
 import beast.base.core.Description;

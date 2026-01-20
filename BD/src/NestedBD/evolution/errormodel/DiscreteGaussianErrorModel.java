@@ -1,4 +1,4 @@
-package BD.evolution.errormodel;
+package NestedBD.evolution.errormodel;
 
 import beast.base.core.Description;
 import beast.base.core.Input;
@@ -23,7 +23,7 @@ import beast.base.inference.parameter.RealParameter;
  * </p>
  */
 @Description("Discrete Gaussian (Truncated Normal) error model for copy-number data.")
-public class DiscreteGaussianErrorModel extends BD.evolution.errormodel.ErrorModel {
+public class DiscreteGaussianErrorModel extends ErrorModel {
 
     public final Input<RealParameter> sigmaInput =
             new Input<>("sigma",
@@ -136,8 +136,21 @@ public class DiscreteGaussianErrorModel extends BD.evolution.errormodel.ErrorMod
         return probs;
     }
 
+    /**
+     * Ensure error matrix is up-to-date before use
+     */
+    private void ensureMatrixUpdated() {
+        if (updateMatrix) {
+            setupErrorMatrix();
+            updateMatrix = false;
+        }
+    }
+
     @Override
     public double getProbability(int observedState, int trueState) {
+        // Update matrix if needed
+        ensureMatrixUpdated();
+
         // Validate inputs
         if (observedState < 0 || observedState >= nrOfStates) {
             return 0.0;
@@ -146,48 +159,19 @@ public class DiscreteGaussianErrorModel extends BD.evolution.errormodel.ErrorMod
             return 0.0;
         }
 
-        // True CN = 0 always observed as 0
-        if (trueState == 0) {
-            return (observedState == 0) ? 1.0 : 0.0;
-        }
-
-        // Discrete Gaussian for true CN > 0
-        return computeDiscreteGaussianProb(observedState, trueState);
-    }
-
-    /**
-     * Calculate P(obs | true, σ) for a single observation-true pair
-     */
-    private double computeDiscreteGaussianProb(int obs, int mu) {
-        double sigma = sigmaParam.getValue();
-
-        // If sigma very small, deterministic at true value
-        if (sigma < 1e-6) {
-            return (obs == mu) ? 1.0 : 0.0;
-        }
-
-        // Compute normalization constant Z(μ, σ)
-        // Z = Σ(x=0 to nstate-1) exp(-(x-μ)²/(2σ²))
-        double Z = 0.0;
-        for (int x = 0; x < nrOfStates; x++) {
-            double diff = x - mu;
-            Z += Math.exp(-(diff * diff) / (2.0 * sigma * sigma));
-        }
-
-        // Compute P(obs | mu, sigma) = exp(-(obs-μ)²/(2σ²)) / Z
-        double diff = obs - mu;
-        double numerator = Math.exp(-(diff * diff) / (2.0 * sigma * sigma));
-        double prob = numerator / Z;
-
-        return prob;
+        return errorMatrix[observedState][trueState];
     }
 
     @Override
     public double[] getProbabilities(int observedState) {
+        // Update matrix if neededz
+        ensureMatrixUpdated();
+
         double[] p = new double[nrOfStates];
 
+        // Copy the entire row from the pre-computed matrix
         for (int trueState = 0; trueState < nrOfStates; trueState++) {
-            p[trueState] = getProbability(observedState, trueState);
+            p[trueState] = errorMatrix[observedState][trueState];
         }
         return p;
     }
@@ -195,7 +179,6 @@ public class DiscreteGaussianErrorModel extends BD.evolution.errormodel.ErrorMod
     @Override
     public double[] getProbabilities(int observedState, double w, int totalread) {
         // For discrete Gaussian, we don't use w and totalread
-        // These parameters are for read-count based error models
         return getProbabilities(observedState);
     }
 

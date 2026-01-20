@@ -1,11 +1,11 @@
-package BD.evolution.likelihood;
+package NestedBD.evolution.likelihood;
 
 import beast.base.core.Description;
 import beast.base.core.Input;
 import beast.base.evolution.alignment.Alignment;
 import beast.base.evolution.likelihood.TreeLikelihood;
 import beast.base.evolution.tree.Node;
-import BD.evolution.errormodel.ErrorModel;
+import NestedBD.evolution.errormodel.ErrorModel;
 
 @Description("Tree likelihood calculation with error models")
 public class TreeLikelihoodWithError extends TreeLikelihood {
