@@ -22,20 +22,47 @@ First, download and build the latest release of Beast2 Project:
     git clone https://github.com/CompEvol/beast2.git
     cd beast2
     ant
-
-Download and build NestedBD. Make sure the folder beast2 and BD are under the same directory when running ant addon. 
-
     cd ..
+
+Now download `NestedBD` at the same directory level as beast2:
+    
     git clone https://github.com/Androstane/NestedBD.git
-    cp -r NestedBD/BD/ BD/
-    cd BD/
-    ant addon
 
-If build is successful, you should be able to find the zip file named BD.addon.zip contain the package under /beast2/build/dist/. You can use the following command to check whether such file exist:
+**Fix the build layout**
 
-    cd ..
-    test -f beast2/build/dist/BD.addon.zip && echo "$FILE exists."
+The `build.xml` used for building the add-on is located inside `NestedBD/BD/` in the repository, but it must be moved to the root of `NestedBD` before running the build.
 
+Move it up one level:
+
+    mv NestedBD/BD/build.xml NestedBD/build.xml
+
+After this, your directory structure should look like:
+```
+.
+├── beast2
+└── NestedBD
+    ├── BD
+    ├── build.xml
+    ├── scripts
+    ├── scripts_plots
+    └── ...
+```
+
+**Build the add-on**
+
+Run the add-on build from the `NestedBD` root directory:
+```
+cd NestedBD
+ant addon
+```
+
+**Check build output**
+
+If build is successful, you should be able to find the zip file named `BD.addon.zip` contain the package under `/beast2/build/dist/`. 
+You can use the following command to check whether such file exist:
+```
+test -f beast2/build/dist/BD.addon.zip && echo "$FILE exists."
+```
 ### Installation
 
 NestedBD is implemented as a BEAST2 package, and requires beast2 installation to run.NestedBD is currently not compatible with beast 2.7. 
