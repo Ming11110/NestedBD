@@ -14,31 +14,64 @@ We are working on making NestedBD and NestedBD-Long available through the BEAST2
 
 ## Build the Package 
 ### Prerequisite 
-Apache Ant needs to be installed.
+- Apache Ant needs to be installed.
+- Java 17 is available (this build targets Java 17).
 
 ### Build from source
 First, download and build the latest release of Beast2 Project: 
+```
+git clone https://github.com/CompEvol/beast2.git
+cd beast2
+ant
+```
+Now download NestedBD at the same directory level as beast2:
+```
+cd ..
+git clone https://github.com/Androstane/NestedBD.git
+```
 
-    git clone https://github.com/CompEvol/beast2.git
-    cd beast2
-    ant
+Before building, create two required directories:
+```
+cd NestedBD
+mkdir -p lib fxtemplates
+```
+**Notes:**
+- `lib/` is used by the Ant classpath configuration (even if empty)
+- `fxtemplates/` is expected by the packaging step (even if you don't use FX templates)
 
-Download and build NestedBD. Make sure the folder beast2 and BD are under the same directory when running ant addon. 
+After this, your directory structure should look like:
+```
+.
+├── beast2
+└── NestedBD
+    ├── BD
+    ├── build.xml
+    ├── lib
+    ├── fxtemplates
+    ├── scripts
+    ├── scripts_plots
+    └── ...
+```
+### Build the add-on
+Run the add-on build from the `NestedBD` root directory:
+```
+cd NestedBD
+ant addon
+```
 
-    cd ..
-    git clone https://github.com/Androstane/NestedBD.git
-    cp -r NestedBD/BD/ BD/
-    cd BD/
-    ant addon
+### Check build output
+If the build is successful, the add-on zip will be created at:
+- `NestedBD/build/dist/`
 
-If build is successful, you should be able to find the zip file named BD.addon.zip contain the package under /beast2/build/dist/. You can use the following command to check whether such file exist:
+The file name follows the pattern `<packageName>.v<packageVersion>.zip` (e.g., `NestedBD.v1.9.6.zip`)
 
-    cd ..
-    test -f beast2/build/dist/BD.addon.zip && echo "$FILE exists."
+You can verify it with:
+```
+ls -1 build/dist/*.zip
+```
 
 ### Installation
-
-NestedBD is implemented as a BEAST2 package, and requires beast2 installation to run.NestedBD is currently not compatible with beast 2.7. 
+NestedBD is implemented as a BEAST2 package, and requires beast2 installation to run. This version of NestedBD is currently compatible with beast 2.7.
 
 #### Installing BEAST2
 Please follow the instruction on http://www.beast2.org/ and download the BEAST2 version for your operating system. Note that this is different to download and build source code of beast2 from GitHub repository. 
