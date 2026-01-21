@@ -14,27 +14,30 @@ We are working on making NestedBD and NestedBD-Long available through the BEAST2
 
 ## Build the Package 
 ### Prerequisite 
-Apache Ant needs to be installed.
+- Apache Ant needs to be installed.
+- Java 17 is available (this build targets Java 17).
 
 ### Build from source
 First, download and build the latest release of Beast2 Project: 
+```
+git clone https://github.com/CompEvol/beast2.git
+cd beast2
+ant
+```
+Now download NestedBD at the same directory level as beast2:
+```
+cd ..
+git clone https://github.com/Androstane/NestedBD.git
+```
 
-    git clone https://github.com/CompEvol/beast2.git
-    cd beast2
-    ant
-    cd ..
-
-Now download `NestedBD` at the same directory level as beast2:
-    
-    git clone https://github.com/Androstane/NestedBD.git
-
-**Fix the build layout**
-
-The `build.xml` used for building the add-on is located inside `NestedBD/BD/` in the repository, but it must be moved to the root of `NestedBD` before running the build.
-
-Move it up one level:
-
-    mv NestedBD/BD/build.xml NestedBD/build.xml
+Before building, create two required directories:
+```
+cd NestedBD
+mkdir -p lib fxtemplates
+```
+**Notes:**
+- `lib/` is used by the Ant classpath configuration (even if empty)
+- `fxtemplates/` is expected by the packaging step (even if you don't use FX templates)
 
 After this, your directory structure should look like:
 ```
@@ -43,30 +46,32 @@ After this, your directory structure should look like:
 └── NestedBD
     ├── BD
     ├── build.xml
+    ├── lib
+    ├── fxtemplates
     ├── scripts
     ├── scripts_plots
     └── ...
 ```
-
-**Build the add-on**
-
+### Build the add-on
 Run the add-on build from the `NestedBD` root directory:
 ```
 cd NestedBD
 ant addon
 ```
 
-**Check build output**
+### Check build output
+If the build is successful, the add-on zip will be created at:
+- `NestedBD/build/dist/`
 
-If build is successful, you should be able to find the zip file named `BD.addon.zip` contain the package under `/beast2/build/dist/`. 
-You can use the following command to check whether such file exist:
+The file name follows the pattern `<packageName>.v<packageVersion>.zip` (e.g., `NestedBD.v1.9.6.zip`)
+
+You can verify it with:
 ```
-test -f beast2/build/dist/BD.addon.zip && echo "$FILE exists."
+ls -1 build/dist/*.zip
 ```
+
 ### Installation
-
-NestedBD is implemented as a BEAST2 package, and requires beast2 installation to run.
-This version of NestedBD is currently compatible with beast 2.7. 
+NestedBD is implemented as a BEAST2 package, and requires beast2 installation to run. This version of NestedBD is currently compatible with beast 2.7.
 
 #### Installing BEAST2
 Please follow the instruction on http://www.beast2.org/ and download the BEAST2 version for your operating system. Note that this is different to download and build source code of beast2 from GitHub repository. 
