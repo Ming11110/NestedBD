@@ -58,6 +58,11 @@ Run the add-on build from the `NestedBD` root directory:
 cd NestedBD
 ant addon
 ```
+**Optional:** To build and automatically install to your local BEAST2 packages directory:
+```
+ant install
+```
+This is equivalent to running `ant addon` followed by manually installing the package to `~/.beast/2.7/NestedBD/` (Linux/Mac) or `%USERPROFILE%/BEAST/2.7/NestedBD/` (Windows).
 
 ### Check build output
 If the build is successful, the add-on zip will be created at:
