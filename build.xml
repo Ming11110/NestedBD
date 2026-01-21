@@ -1,0 +1,287 @@
+<!-- Build NestedBD. It is also used by Hudson BEAST_II project. JUnit test is available for this build. -->
+<project basedir="." default="build_jar_all_NestedBD" name="BUILD_NestedBD">
+	<description>
+	    Build NestedBD. 
+            Also used by Hudson BEAST_II project. 
+	    JUnit test is available for this build.
+	    $Id: build_BEAST_II.xml $
+	</description>
+
+	<!-- set global properties for this build -->
+	<property name="srcNestedBD" location="BD/src" />
+	<property name="buildNestedBD" location="build" />
+	<property name="libNestedBD" location="lib" />
+	<property name="release_dir" value="release" />
+	<property name="distNestedBD" location="${buildNestedBD}/dist" />
+	<property name="beast2path" location="../beast2" />
+	<property name="BeastFXpath" location="../BeastFX" />
+	<property name="srcBeast2" location="${beast2path}/test" />
+	<property name="beast2classpath" location="${beast2path}/build" />
+	<property name="Add_on_dir" value="${release_dir}/add-on" />
+
+	<!-- BEAST 2 currently uses Java 17 -->
+	<property name="sourceVersion" value="17"/>
+	<property name="targetVersion" value="17"/>
+
+
+	<property name="version" value="1.9.7" />
+
+    <import file="${beast2path}/build.xml" />
+
+
+	<property name="main_class_BEAST" value="beastfx.app.beast.BeastMain" />
+	<property name="report" value="${buildNestedBD}/junitreport"/>
+
+	<path id="classpath">
+        <pathelement path="${buildNestedBD}"/>
+		<fileset dir="${libNestedBD}" includes="nashorn-core-15.3.jar"/>
+		<fileset dir="${beast2path}/lib/junit" includes="junit-*.jar"/>
+		<fileset dir="${beast2path}/lib" includes="*.jar"/>
+		<fileset dir="${beast2path}/lib" includes="colt.jar"/>
+        <pathelement path="${beast2classpath}"/>
+        <pathelement path="${BeastFXpath}/build"/>
+	</path>
+
+	<!-- start -->
+	<target name="initNestedBD">
+		<echo message="${ant.project.name}: ${ant.file}" />
+        <available file="BD/version.xml" property="versionAvailable"/>
+        <fail unless="versionAvailable">
+              ** Required file version.xml does not exist. **
+        </fail>
+
+        <!-- Read package name and version from xml file -->
+        <xmlproperty file="BD/version.xml" prefix="fromVersionFile" />
+        <property name="projName" value="${fromVersionFile.package(name)}" />
+        <property name="projVersion" value="${fromVersionFile.package(version)}" />
+        <property name="NestedBDVersion" value="${fromVersionFile.package(version)}" />
+    </target>
+
+
+
+
+	<target name="cleanNestedBD">
+    	<delete dir="${buildNestedBD}" />
+	</target>
+
+	<!-- clean previous build, and then compile Java source code, and Juint test -->
+	<target name="build_all_NestedBD" depends="cleanNestedBD,compile-allNestedBD,junitNestedBD"
+        description="Clean and Build all run-time stuff">
+	</target>
+
+	<!-- clean previous build, compile Java source code, and Junit test, and make the beast.jar and beauti.jar -->
+	<target name="build_jar_all_NestedBD" depends="cleanNestedBD,compile-allNestedBD,junitNestedBD,dist_all_NestedBD"
+        description="Clean and Build all run-time stuff">
+	</target>
+
+
+	<!-- No JUnit Test, clean previous build, compile Java source code, and make the NestedBD.jar and beauti.jar -->
+	<target name="build_jar_all_NestedBD_NoJUnitTest" depends="cleanNestedBD,compile-allNestedBD,dist_all_NestedBD"
+        description="Clean and Build all run-time stuff">
+	</target>
+
+	<!-- compile Java source code -->
+<!--
+	<target name="compile-allNestedBD" depends="initNestedBD,compile-all">
+-->	
+	<target name="compile-allNestedBD" depends="initNestedBD">
+
+
+	    <!-- Capture the path as a delimited property using the refid attribute -->
+	    <property name="myclasspath" refid="classpath"/>
+	    <!-- Emit the property to the ant console -->
+	    <echo message="Classpath = ${myclasspath}"/>
+
+		<mkdir dir="${buildNestedBD}" />
+
+        <!-- add this if Zulu JDK not installed executable="../../Downloads/zulu17.36.13-ca-fx-jdk17.0.4-macosx_x64/zulu-17.jdk/Contents/Home/bin/javac" -->
+		<!-- Compile the java code from ${srcNestedBD} into ${buildNestedBD} /bin -->
+		<javac srcdir="${srcNestedBD}" destdir="${buildNestedBD}" classpathref="classpath"
+			   target="${targetVersion}" source="${sourceVersion}"
+			   fork="true" includeantruntime="false"
+		       memoryinitialsize="256m"
+		       memorymaximumsize="1024m">
+			<include name="NestedBD/**/**" />
+			<!-- compile JUnit test classes -->
+			<include name="test/beast/**" />
+		</javac>
+		<echo message="Successfully compiled." />
+	</target>
+
+	<!-- make the NestedBD.hjar and TreeAnnotator.jar -->
+	<target name="dist_all_NestedBD" depends="compile-allNestedBD" description="create NestedBD jar">
+		<!-- Create the distribution directory -->
+		<mkdir dir="${distNestedBD}" />
+
+		<!-- Put everything in ${buildNestedBD} into the beast.jar file -->
+		<jar jarfile="${distNestedBD}/NestedBD.all.v${NestedBDVersion}.jar">
+			<manifest>
+				<attribute name="Built-By" value="${user.name}" />
+				<attribute name="Main-Class" value="${main_class_BEAST}" />
+			</manifest>
+			<fileset dir="${buildNestedBD}">
+				<include name="**/*.class" />
+			</fileset>
+			<fileset dir="${beast2classpath}">
+				<include name="beast/**/*.class" />
+				<include name="beast/**/*.properties" />
+				<include name="beast/**/*.png" />
+				<include name="beagle/**/*.class" />
+				<include name="org/**/*.class" />
+			</fileset>
+			<zipgroupfileset dir="${libNestedBD}" includes="nashorn-core-15.3.jar" />
+			<zipgroupfileset dir="${beast2path}/lib" includes="jam.jar" />
+			<zipgroupfileset dir="${beast2path}/lib" includes="beagle.jar" />
+			<zipgroupfileset dir="${beast2path}/lib" includes="colt.jar" />
+			<zipgroupfileset dir="${beast2path}/lib" includes="commons-math3-3.1.1.jar" />
+			<zipgroupfileset dir="${beast2path}/lib" includes="antlr-runtime-4.10.jar"/>
+		</jar>
+
+		<jar jarfile="${distNestedBD}/treeannotator.jar">
+			<manifest>
+				<attribute name="Built-By" value="${user.name}" />
+				<attribute name="Main-Class" value="beast.app.treeannotator.TreeAnnotator" />
+			</manifest>
+			<fileset dir="${buildNestedBD}">
+				<include name="beast/**/*.class" />
+			</fileset>
+			<fileset dir="${beast2classpath}">
+				<include name="NestedBD/**/*.class" />
+				<include name="NestedBD/**/*.properties" />
+				<include name="NestedBD/**/*.png" />
+				<include name="beagle/**/*.class" />
+				<include name="org/**/*.class" />
+			</fileset>
+			<zipgroupfileset dir="${beast2path}/lib" includes="jam.jar" />
+			<!--zipgroupfileset dir="${lib}" includes="commons-math-II.0.jar" /-->
+		</jar>
+		<jar jarfile="${distNestedBD}/NestedBD.v${NestedBDVersion}.src.jar">
+			<fileset dir="${srcNestedBD}">
+				<include name="NestedBD/**/*.java" />
+				<include name="test/**/*.java" />
+				<include name="NestedBD/**/*.png" />
+				<include name="NestedBD/**/*.xsl" />
+			</fileset>
+        </jar>
+		<jar jarfile="${distNestedBD}/NestedBD.v${NestedBDVersion}.jar">
+			<manifest>
+				<attribute name="Built-By" value="${user.name}" />
+			</manifest>
+			<fileset dir="${buildNestedBD}">
+				<include name="NestedBD/**/*.class" />
+				<exclude name="**/**/Sequence.class"/>
+				<exclude name="**/**/Prior.class"/>
+				<exclude name="**/**/SkyrideBlockOperator.class"/>
+				<include name="**/*.properties" />
+			</fileset>
+		</jar>
+	</target>
+
+	<!-- run beast.jar -->
+	<target name="run_NestedBD">
+		<java jar="${distNestedBD}/NestedBD.all.v${NestedBDVersion}.jar" fork="true" />
+	</target>
+
+	
+	<!-- JUnit test -->
+	<target name="junitNestedBD" depends="compile-allNestedBD">
+		<mkdir dir="${report}" />
+		<junit printsummary="yes"> <!--showoutput='yes'-->
+			<classpath>
+				<path refid="classpath" />
+<!--				<path location="${buildNestedBD}" />-->
+			</classpath>
+
+			<formatter type="xml" />
+
+			<batchtest fork="yes" todir="${report}">
+			<!-->
+				<fileset dir="${srcNestedBD}">
+                    <include name="test/**/*Test.java"/>
+                    <exclude name="test/beast/integration/**/*Test.java"/>
+				</fileset>
+				-->
+				<fileset dir="${srcBeast2}">
+                    <include name="test/beast/integration/**/*Test.java"/>                                         
+                    <exclude name="test/beast/integration/**/ResumeTest.java"/>                                         
+                    <exclude name="test/beast/integration/**/ExampleXmlParsingTest.java"/>                                         
+				</fileset>
+			</batchtest>
+		</junit>
+		<echo message="JUnit test finished." />
+	</target>
+    
+    <target name="junitreport">
+		<junitreport todir="${report}">
+			<fileset dir="${report}" includes="*.xml"/>
+			<report format="frames" todir="${report}"/>
+		</junitreport>
+		<echo message="JUnit test report finished." />
+	</target>
+
+	<target name="addon" depends="package"/>
+	
+	<target name="package"
+	        depends="build_jar_all_NestedBD_NoJUnitTest"
+	        description="release BEAST 2 add-on version of NestedBD">
+        <property name="fullName" value="${projName}.v${projVersion}"/>
+
+		<delete dir="${Add_on_dir}" />
+		<!-- Create the release directory -->
+		<mkdir dir="${Add_on_dir}" />
+		<mkdir dir="${Add_on_dir}/lib" />
+		<mkdir dir="${Add_on_dir}/examples" />
+		<mkdir dir="${Add_on_dir}/fxtemplates" />
+
+		<copy todir="${Add_on_dir}">
+			<fileset file="version.xml"/>
+		</copy>
+		<copy todir="${Add_on_dir}/examples">
+			<fileset dir="examples" includes="*.xml">
+			</fileset>
+		</copy>
+
+		<copy todir="${Add_on_dir}/lib">
+			<fileset  file="${distNestedBD}/NestedBD.v${NestedBDVersion}.jar" />
+		</copy>
+		<copy todir="${Add_on_dir}">
+			<fileset file="${distNestedBD}/NestedBD.v${NestedBDVersion}.src.jar" />
+		</copy>
+		<copy todir="${Add_on_dir}/fxtemplates">
+			<fileset file="fxtemplates/Weibull.xml" />
+			<fileset file="fxtemplates/extras.xml" />
+		</copy>
+		<jar jarfile="${distNestedBD}/${fullName}.zip">
+			<fileset dir="${Add_on_dir}">
+				<include name="**/*" />
+			</fileset>
+        </jar>
+		<echo message="Add-on version release is finished." />
+	</target>
+
+
+        <condition property="isWindows"><os family="windows" /></condition>
+        <condition property="isLinux"><and><os family="unix"/><not><os family="mac"/></not></and></condition>
+        <condition property="isMac"><os family="mac" /></condition>
+
+        <target name="installLinux" depends="package" if="isLinux">
+                <mkdir dir="${user.home}/.beast/2.7/${projName}"/>
+                        <unzip src="${distNestedBD}/${fullName}.zip" dest="${user.home}/.beast/2.7/${projName}"/>
+        </target>
+
+        <target name="installMac" depends="package" if="isMac">
+                <mkdir dir="${user.home}/.beast/2.7/${projName}"/>
+                        <unzip src="${distNestedBD}/${fullName}.zip" dest="${user.home}/Library/Application Support/BEAST/2.7/${projName}"/>
+        </target>
+
+        <target name="installWindows" depends="package" if="isWindows">
+                <mkdir dir="${user.home}/BEAST/2.7/${projName}"/>
+                        <unzip src="${distNestedBD}/${fullName}.zip" dest="${user.home}/BEAST/2.7/${projName}"/>
+        </target>
+
+        <target name="install" depends="installWindows,installMac,installLinux">
+        </target>
+
+
+
+</project>
