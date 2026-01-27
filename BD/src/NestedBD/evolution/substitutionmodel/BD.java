@@ -10,11 +10,12 @@ import java.util.Arrays;
 
 import beast.base.core.Input;
 import beast.base.core.Input.Validate;
+import beast.base.inference.parameter.IntegerParameter;
 import beast.base.inference.parameter.RealParameter;
 
 
 public class BD extends SubstitutionModel.Base {
-	public Input<RealParameter> nstate = new Input<RealParameter>("nstate", "same as what in BD model", Validate.REQUIRED);
+	public Input<IntegerParameter> nstate = new Input<IntegerParameter>("nstate", "same as what in BD model", Validate.REQUIRED);
 	public Input<RealParameter> bdRateInput = new Input<>("bdRate", "The birth-death rate (default=1.0)", Validate.OPTIONAL);
 	protected static int nrOfStates;
 	protected static double[] binom_array;
