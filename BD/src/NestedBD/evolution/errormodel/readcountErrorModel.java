@@ -1,4 +1,5 @@
 package NestedBD.evolution.errormodel;
+import beast.base.inference.parameter.IntegerParameter;
 import org.apache.commons.math.special.Gamma;
 import java.lang.Math;
 import java.util.Arrays;
@@ -10,7 +11,7 @@ import beast.base.evolution.datatype.DataType;
 import beast.base.evolution.datatype.IntegerData;
 
 public class readcountErrorModel extends ErrorModel {
-	public Input<RealParameter> nstate = new Input<RealParameter>("nstate", "same as what in BD model", Validate.REQUIRED);
+	public Input<IntegerParameter> nstate = new Input<IntegerParameter>("nstate", "same as what in BD model", Validate.REQUIRED);
 	final public Input<RealParameter> theta = new Input<>("theta","inverse dispersion of negative binomail distribution", Input.Validate.REQUIRED);
 	final public Input<RealParameter> smoothing = new Input<>("smoothing","inverse dispersion of negative binomail distribution");
 	final public Input<RealParameter> ploidy = new Input<>("ploidy","ploidy level of genome");

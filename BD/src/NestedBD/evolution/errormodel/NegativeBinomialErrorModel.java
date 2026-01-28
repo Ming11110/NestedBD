@@ -3,6 +3,7 @@ package NestedBD.evolution.errormodel;
 import beast.base.core.Description;
 import beast.base.core.Input;
 import beast.base.evolution.datatype.DataType;
+import beast.base.inference.parameter.IntegerParameter;
 import beast.base.inference.parameter.RealParameter;
 import org.apache.commons.math.special.Gamma;
 
@@ -35,7 +36,7 @@ public class NegativeBinomialErrorModel extends ErrorModel {
     public final Input<RealParameter> dispersionInput =
             new Input<>("dispersion", "Negative binomial dispersion parameter k.", Input.Validate.REQUIRED);
 
-    public final Input<RealParameter> nstateInput =
+    public final Input<IntegerParameter> nstateInput =
             new Input<>("nstate", "Number of states (same as in BD model).", Input.Validate.REQUIRED);
 
     protected int nrOfStates;

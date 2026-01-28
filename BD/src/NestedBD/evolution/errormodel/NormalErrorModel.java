@@ -3,6 +3,7 @@ package NestedBD.evolution.errormodel;
 import beast.base.core.Description;
 import beast.base.core.Input;
 import beast.base.core.Input.Validate;
+import beast.base.inference.parameter.IntegerParameter;
 import beast.base.inference.parameter.RealParameter;
 import beast.base.evolution.datatype.DataType;
 import beast.base.evolution.datatype.IntegerData;
@@ -12,7 +13,7 @@ public class NormalErrorModel extends ErrorModel {
 	final public Input<RealParameter> vrInput = new Input<>("vr","variance residue");
 	final public Input<RealParameter> vfInput = new Input<>("vf","varaince_factor");
 	final public Input<RealParameter> errorprob = new Input<>("p","probability of the inferred copy number is not correct");
-	public Input<RealParameter> nstate = new Input<RealParameter>("nstate", "same as what in BD model", Validate.REQUIRED);
+	public Input<IntegerParameter> nstate = new Input<IntegerParameter>("nstate", "same as what in BD model", Validate.REQUIRED);
 	protected static int nrOfStates;
 	protected static double[] binom_array;
 	private RealParameter v_r;

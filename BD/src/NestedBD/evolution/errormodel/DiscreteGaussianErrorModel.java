@@ -3,6 +3,7 @@ package NestedBD.evolution.errormodel;
 import beast.base.core.Description;
 import beast.base.core.Input;
 import beast.base.evolution.datatype.DataType;
+import beast.base.inference.parameter.IntegerParameter;
 import beast.base.inference.parameter.RealParameter;
 
 /**
@@ -30,7 +31,7 @@ public class DiscreteGaussianErrorModel extends ErrorModel {
                     "Gaussian error standard deviation (σ). When σ=0, observations equal true values.",
                     Input.Validate.REQUIRED);
 
-    public final Input<RealParameter> nstateInput =
+    public final Input<IntegerParameter> nstateInput =
             new Input<>("nstate",
                     "Number of copy number states (must be >= max observed CN + 1).",
                     Input.Validate.REQUIRED);
@@ -140,7 +141,9 @@ public class DiscreteGaussianErrorModel extends ErrorModel {
      * Ensure error matrix is up-to-date before use
      */
     private void ensureMatrixUpdated() {
+        System.out.println("ensureMatrixUpdated called, updateMatrix = " + updateMatrix);
         if (updateMatrix) {
+            System.out.println("Updating error matrix, sigma = " + sigmaParam.getValue());
             setupErrorMatrix();
             updateMatrix = false;
         }
@@ -164,7 +167,7 @@ public class DiscreteGaussianErrorModel extends ErrorModel {
 
     @Override
     public double[] getProbabilities(int observedState) {
-        // Update matrix if neededz
+        // Update matrix if needed
         ensureMatrixUpdated();
 
         double[] p = new double[nrOfStates];
@@ -173,6 +176,8 @@ public class DiscreteGaussianErrorModel extends ErrorModel {
         for (int trueState = 0; trueState < nrOfStates; trueState++) {
             p[trueState] = errorMatrix[observedState][trueState];
         }
+
+
         return p;
     }
 
@@ -196,6 +201,9 @@ public class DiscreteGaussianErrorModel extends ErrorModel {
         // Mark that error matrix needs recalculation
         // This is called when parameters (sigma) change during MCMC
         updateMatrix = true;
+
+        //System.out.println("Requires recalculation, sigma = " + sigmaParam.getValue());
+
         return true;
     }
 
