@@ -114,7 +114,7 @@ public class NegativeBinomialErrorModel extends ErrorModel {
         if (observedCN < 0) return 0.0;
 
         double mean = (double) trueCN;
-        double k = kParam.getValue();
+        double k = dispersionInput.get().getValue();
 
         // Poisson limit for large k
         if (k > 1e6) {
@@ -145,20 +145,9 @@ public class NegativeBinomialErrorModel extends ErrorModel {
         }
     }
 
-    /**
-     * Ensure error matrix is up-to-date before use
-     */
-    private void ensureMatrixUpdated() {
-        if (updateMatrix) {
-            setupErrorMatrix();
-            updateMatrix = false;
-        }
-    }
 
     @Override
     public double getProbability(int observedState, int trueState) {
-        // Update matrix if needed
-        ensureMatrixUpdated();
 
         // Validate inputs
         if (observedState < 0 || observedState >= nrOfStates) {
@@ -174,8 +163,6 @@ public class NegativeBinomialErrorModel extends ErrorModel {
 
     @Override
     public double[] getProbabilities(int observedState) {
-        // Update matrix if needed
-        ensureMatrixUpdated();
 
         double[] p = new double[nrOfStates];
 

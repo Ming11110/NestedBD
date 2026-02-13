@@ -103,7 +103,7 @@ public class DiscreteGaussianErrorModel extends ErrorModel {
      * </p>
      */
     private double[] computeDiscreteGaussian(int mu) {
-        double sigma = sigmaParam.getValue();
+        double sigma = sigmaInput.get().getValue();
         double[] probs = new double[nrOfStates];
 
         // Special case: if sigma very small, put all mass at true value
@@ -137,23 +137,8 @@ public class DiscreteGaussianErrorModel extends ErrorModel {
         return probs;
     }
 
-    /**
-     * Ensure error matrix is up-to-date before use
-     */
-    private void ensureMatrixUpdated() {
-        System.out.println("ensureMatrixUpdated called, updateMatrix = " + updateMatrix);
-        if (updateMatrix) {
-            System.out.println("Updating error matrix, sigma = " + sigmaParam.getValue());
-            setupErrorMatrix();
-            updateMatrix = false;
-        }
-    }
-
     @Override
     public double getProbability(int observedState, int trueState) {
-        // Update matrix if needed
-        ensureMatrixUpdated();
-
         // Validate inputs
         if (observedState < 0 || observedState >= nrOfStates) {
             return 0.0;
@@ -167,17 +152,11 @@ public class DiscreteGaussianErrorModel extends ErrorModel {
 
     @Override
     public double[] getProbabilities(int observedState) {
-        // Update matrix if needed
-        ensureMatrixUpdated();
-
         double[] p = new double[nrOfStates];
-
         // Copy the entire row from the pre-computed matrix
         for (int trueState = 0; trueState < nrOfStates; trueState++) {
             p[trueState] = errorMatrix[observedState][trueState];
         }
-
-
         return p;
     }
 
@@ -201,9 +180,7 @@ public class DiscreteGaussianErrorModel extends ErrorModel {
         // Mark that error matrix needs recalculation
         // This is called when parameters (sigma) change during MCMC
         updateMatrix = true;
-
         //System.out.println("Requires recalculation, sigma = " + sigmaParam.getValue());
-
         return true;
     }
 
