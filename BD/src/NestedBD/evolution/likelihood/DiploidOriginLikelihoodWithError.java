@@ -12,6 +12,8 @@ import beast.base.evolution.tree.Node;
 import NestedBD.evolution.errormodel.ErrorModel;
 import NestedBD.evolution.errormodel.poissonErrorModel;
 import NestedBD.evolution.errormodel.readcountErrorModel;
+import beast.base.evolution.tree.TreeInterface;
+
 @Description("Tree likelihood calculation using DiploidOriginLikelihood with error models")
 public class DiploidOriginLikelihoodWithError extends DiploidOriginLikelihood {
 
@@ -99,6 +101,8 @@ public class DiploidOriginLikelihoodWithError extends DiploidOriginLikelihood {
 					}
 				}
 			}
+		} else {
+			throw new RuntimeException("Error Model required to handle integer data.");
 		}
 		//int t = getTaxonIndex(node.getID(), data); // taxon index
 		//System.out.print(t);
@@ -114,13 +118,15 @@ public class DiploidOriginLikelihoodWithError extends DiploidOriginLikelihood {
 		for (int p = 0; p < nrOfPatterns; p++) {
 			int state = data.getPattern(t, p);
 			double[] tipLikelihoods;
-			if (errorModel.canHandleDataType(integerData)) {
+			if (errorModel instanceof readcountErrorModel || errorModel instanceof poissonErrorModel) {
 				tipLikelihoods = errorModel.getProbabilities(state, w[p], totalread);
 				//System.out.println(state);
 				//System.out.println(Arrays.toString(tipLikelihoods));
 			}
 			else {
 				tipLikelihoods = errorModel.getProbabilities(state);
+				//DEBUG
+//				System.out.println("DEBUG: tipLikelihoods = " + Arrays.toString(tipLikelihoods));
 				
 			}
 			for (int s = 0; s < nrOfStates; s++) {
@@ -131,7 +137,13 @@ public class DiploidOriginLikelihoodWithError extends DiploidOriginLikelihood {
 		return partials;
 	}
 
-	@Override
+	private void updateAllLeafPartials() {
+		TreeInterface tree = treeInput.get();
+		// traverse tree and set partials
+		setPartials(tree.getRoot(), alignment.getPatternCount());
+	}
+
+		@Override
 	protected void setPartials(Node node, int nrOfPatterns) {
 		if (node.isLeaf()) {
 			//System.out.println(node.getNr());
@@ -141,6 +153,35 @@ public class DiploidOriginLikelihoodWithError extends DiploidOriginLikelihood {
 			setPartials(node.getChild(0), nrOfPatterns);
 			setPartials(node.getChild(1), nrOfPatterns);
 		}
+	}
+
+	private boolean tipsNeedRebuild = true;
+
+	@Override
+	public void store() {
+		super.store();
+		// store flags if needed
+	}
+
+	@Override
+	public void restore() {
+		super.restore();
+		tipsNeedRebuild = true;   // because leaf partials / error matrix might be for proposed state
+	}
+
+	@Override
+	protected boolean requiresRecalculation() {
+		boolean needs = super.requiresRecalculation();
+
+		if (tipsNeedRebuild || errorModel.isDirtyCalculation()) {
+			errorModel.setUpdateFlag(true);
+			errorModel.setupErrorMatrix();
+			updateAllLeafPartials();
+			recalc = true;
+			tipsNeedRebuild = false;
+			needs = true;
+		}
+		return needs;
 	}
 
 }
