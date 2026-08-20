@@ -1,6 +1,6 @@
-package beast.base.evolution.errormodel;
+package NestedBD.evolution.errormodel;
 
-import beast.base.core.CalculationNode;
+import beast.base.inference.CalculationNode;
 import beast.base.core.Description;
 import beast.base.core.Input;
 import beast.base.evolution.datatype.DataType;

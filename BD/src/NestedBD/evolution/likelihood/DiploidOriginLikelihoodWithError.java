@@ -1,4 +1,4 @@
-package beast.base.evolution.likelihood;
+package NestedBD.evolution.likelihood;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -9,17 +9,22 @@ import beast.base.core.Input;
 import beast.base.evolution.alignment.Alignment;
 import beast.base.evolution.datatype.IntegerData;
 import beast.base.evolution.tree.Node;
-import beast.base.evolution.errormodel.ErrorModel;
-import beast.base.evolution.errormodel.poissonErrorModel;
-import beast.base.evolution.errormodel.readcountErrorModel;
+import NestedBD.evolution.errormodel.ErrorModel;
+import NestedBD.evolution.errormodel.poissonErrorModel;
+import NestedBD.evolution.errormodel.readcountErrorModel;
+import beast.base.evolution.tree.TreeInterface;
+
 @Description("Tree likelihood calculation using DiploidOriginLikelihood with error models")
 public class DiploidOriginLikelihoodWithError extends DiploidOriginLikelihood {
 
-	final public Input<beast.base.evolution.errormodel.ErrorModel> errorModelInput = new Input<>("errorModel", "error model to use for leaf partials");
+	final public Input<ErrorModel> errorModelInput = new Input<>("errorModel", "error model to use for leaf partials");
 	final public Input<String> weight = new Input<>("weight", "weight for segment, required for readcountErrorModel");
 	protected ErrorModel errorModel;
 	
 	protected boolean useTipLikelihoods = true;
+
+	IntegerData integerData = new IntegerData();
+
 
 	@Override
 	public void initAndValidate() {
@@ -61,7 +66,8 @@ public class DiploidOriginLikelihoodWithError extends DiploidOriginLikelihood {
 		double pattern_weight = 0;
 		int counter = 0;
 		double [] w = new double[nrOfPatterns];
-		if (errorModel instanceof readcountErrorModel || errorModel instanceof poissonErrorModel) {
+		// fixed error model code below to handle all error model classes with IntegerData
+		if (errorModel.canHandleDataType(integerData)) {
 			//equal weights, use only sampled bins 
 			if (weight.get() == null){
 				for (int i = 0; i < nrOfPatterns; i ++) {
@@ -95,11 +101,13 @@ public class DiploidOriginLikelihoodWithError extends DiploidOriginLikelihood {
 					}
 				}
 			}
+		} else {
+			throw new RuntimeException("Error Model required to handle integer data.");
 		}
 		//int t = getTaxonIndex(node.getID(), data); // taxon index
 		//System.out.print(t);
 		int i = 0;
-		if (errorModel instanceof readcountErrorModel || errorModel instanceof poissonErrorModel) {
+		if (errorModel.canHandleDataType(integerData)) {
 			if (weight_mode == 0 | totalread == -1){
 				totalread = 0;
 				for (int p = 0; p < nrOfPatterns; p++) {
@@ -117,6 +125,8 @@ public class DiploidOriginLikelihoodWithError extends DiploidOriginLikelihood {
 			}
 			else {
 				tipLikelihoods = errorModel.getProbabilities(state);
+				//DEBUG
+//				System.out.println("DEBUG: tipLikelihoods = " + Arrays.toString(tipLikelihoods));
 				
 			}
 			for (int s = 0; s < nrOfStates; s++) {
@@ -127,7 +137,13 @@ public class DiploidOriginLikelihoodWithError extends DiploidOriginLikelihood {
 		return partials;
 	}
 
-	@Override
+	private void updateAllLeafPartials() {
+		TreeInterface tree = treeInput.get();
+		// traverse tree and set partials
+		setPartials(tree.getRoot(), alignment.getPatternCount());
+	}
+
+		@Override
 	protected void setPartials(Node node, int nrOfPatterns) {
 		if (node.isLeaf()) {
 			//System.out.println(node.getNr());
@@ -137,6 +153,35 @@ public class DiploidOriginLikelihoodWithError extends DiploidOriginLikelihood {
 			setPartials(node.getChild(0), nrOfPatterns);
 			setPartials(node.getChild(1), nrOfPatterns);
 		}
+	}
+
+	private boolean tipsNeedRebuild = true;
+
+	@Override
+	public void store() {
+		super.store();
+		// store flags if needed
+	}
+
+	@Override
+	public void restore() {
+		super.restore();
+		tipsNeedRebuild = true;   // because leaf partials / error matrix might be for proposed state
+	}
+
+	@Override
+	protected boolean requiresRecalculation() {
+		boolean needs = super.requiresRecalculation();
+
+		if (tipsNeedRebuild || errorModel.isDirtyCalculation()) {
+			errorModel.setUpdateFlag(true);
+			errorModel.setupErrorMatrix();
+			updateAllLeafPartials();
+			recalc = true;
+			tipsNeedRebuild = false;
+			needs = true;
+		}
+		return needs;
 	}
 
 }
