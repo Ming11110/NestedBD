@@ -1,0 +1,16 @@
+<package name='nestedBD.lphybeast' version='2.0.0'>
+    <!-- lphybeast -->
+    <depends on='nestedBD' atleast='2.0.0'/>
+    <depends on='lphybeast' atleast='1.4.0'/>
+
+    <!-- add BEAST2 service below  -->
+<!--    <service type="beast.base.core.BEASTInterface">-->
+<!--        &lt;!&ndash; any ? &ndash;&gt;-->
+<!--    </service>-->
+
+    <!-- add lphybeast ext below  -->
+    <service type="lphybeast.spi.LPhyBEASTExt">
+        <provider classname="nestedBD.lphybeast.spi.NestedBDLBImpl"/>
+    </service>
+
+</package>

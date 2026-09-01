@@ -1,1 +1,23 @@
-/.metadata/
+# macOS
+.DS_Store
+**/.DS_Store
+
+# IntelliJ / Eclipse
+.idea/
+**/.idea/
+*.iml
+.classpath
+.project
+.settings/
+
+# Maven / build output
+target/
+**/target/
+.flattened-pom.xml
+**/.flattened-pom.xml
+
+# legacy Ant build output
+bin/
+build/
+classes/
+release/
