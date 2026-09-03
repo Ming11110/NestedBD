@@ -12,6 +12,7 @@ import NestedBD.lphybeast.tobeast.generators.NegativeBinomialErrorModelToBEAST;
 import NestedBD.lphybeast.tobeast.generators.PhyloDiscreteToBEAST;
 import NestedBD.lphybeast.tobeast.values.CopyNumberBDToBEAST;
 import phylonco.lphy.evolution.copynumbermodel.CopyNumberBD;
+import phylonco.lphy.evolution.copynumbermodel.ReadCopyProfile;
 import NestedBD.lphybeast.tobeast.values.IntegerCharacterMatrixToBEAST;
 
 import java.util.List;
@@ -37,7 +38,8 @@ public class NestedBDLBImpl implements LPhyBEASTMapping {
     @Override
     public List<Class<? extends Generator>> getExcludedGenerator() {
         return List.of(
-        CopyNumberBD.class);
+        CopyNumberBD.class,
+        ReadCopyProfile.class);
     }
 
     @Override
