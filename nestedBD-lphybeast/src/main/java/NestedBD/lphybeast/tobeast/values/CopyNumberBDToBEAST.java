@@ -1,6 +1,6 @@
-package NestedBD.lphybeast.tobeast.values;
+package nestedBD.lphybeast.tobeast.values;
 
-import NestedBD.evolution.substitutionmodel.BD;
+import nestedBD.evolution.substitutionmodel.BD;
 import beast.base.spec.inference.parameter.IntScalarParam;
 import beast.base.spec.domain.PositiveInt;
 import beast.base.spec.inference.parameter.RealScalarParam;
@@ -9,7 +9,7 @@ import beast.base.spec.domain.PositiveReal;
 import lphy.core.model.Value;
 import lphybeast.BEASTContext;
 import lphybeast.ValueToBEAST;
-import phylonco.lphy.evolution.copynumbermodel.CopyNumberBD;
+import nestedBD.lphy.evolution.copynumbermodel.CopyNumberBD;
 
 public class CopyNumberBDToBEAST implements ValueToBEAST<CopyNumberBD, BD> {
 

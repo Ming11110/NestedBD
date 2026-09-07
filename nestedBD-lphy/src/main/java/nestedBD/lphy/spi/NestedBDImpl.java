@@ -1,10 +1,9 @@
-package phylonco.lphy.spi;
+package nestedBD.lphy.spi;
 
 import lphy.base.spi.LPhyBaseImpl;
 import lphy.core.model.BasicFunction;
 import lphy.core.model.GenerativeDistribution;
-//import phylonco.lphy.evolution.alignment.*;
-import phylonco.lphy.evolution.copynumbermodel.*;
+import nestedBD.lphy.evolution.copynumbermodel.*;
 
 import java.util.Arrays;
 import java.util.List;

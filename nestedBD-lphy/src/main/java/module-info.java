@@ -1,14 +1,14 @@
 /**
  * @author Walter Xie
  */
-module phylonco.lphy {
+module nestedBD.lphy {
     requires transitive lphy.base;
     requires jdk.jfr;
 
     //copy number model
-    exports phylonco.lphy.evolution.copynumbermodel;
+    exports nestedBD.lphy.evolution.copynumbermodel;
 
     // declare what service interface the provider intends to use
     uses lphy.core.spi.Extension;
-    provides lphy.core.spi.Extension with phylonco.lphy.spi.NestedBDImpl;
+    provides lphy.core.spi.Extension with nestedBD.lphy.spi.NestedBDImpl;
 }

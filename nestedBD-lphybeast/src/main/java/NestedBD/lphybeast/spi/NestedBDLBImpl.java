@@ -1,4 +1,4 @@
-package NestedBD.lphybeast.spi;
+package nestedBD.lphybeast.spi;
 
 import beast.base.evolution.datatype.DataType;
 import jebl.evolution.sequences.SequenceType;
@@ -7,13 +7,13 @@ import lphybeast.GeneratorToBEAST;
 import lphybeast.ValueToBEAST;
 import lphybeast.spi.LPhyBEASTMapping;
 
-import NestedBD.lphybeast.tobeast.generators.DiscreteGaussianErrorModelToBEAST;
-import NestedBD.lphybeast.tobeast.generators.NegativeBinomialErrorModelToBEAST;
-import NestedBD.lphybeast.tobeast.generators.PhyloDiscreteToBEAST;
-import NestedBD.lphybeast.tobeast.values.CopyNumberBDToBEAST;
-import phylonco.lphy.evolution.copynumbermodel.CopyNumberBD;
-import phylonco.lphy.evolution.copynumbermodel.ReadCopyProfile;
-import NestedBD.lphybeast.tobeast.values.IntegerCharacterMatrixToBEAST;
+import nestedBD.lphybeast.tobeast.generators.DiscreteGaussianErrorModelToBEAST;
+import nestedBD.lphybeast.tobeast.generators.NegativeBinomialErrorModelToBEAST;
+import nestedBD.lphybeast.tobeast.generators.PhyloDiscreteToBEAST;
+import nestedBD.lphybeast.tobeast.values.CopyNumberBDToBEAST;
+import nestedBD.lphy.evolution.copynumbermodel.CopyNumberBD;
+import nestedBD.lphy.evolution.copynumbermodel.ReadCopyProfile;
+import nestedBD.lphybeast.tobeast.values.IntegerCharacterMatrixToBEAST;
 
 import java.util.List;
 import java.util.Map;

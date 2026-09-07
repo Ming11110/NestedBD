@@ -5,18 +5,18 @@ open module nestedBD.beast {
     requires org.apache.commons.statistics.distribution;  
     requires org.apache.commons.numbers.gamma;           
 
-    exports NestedBD.evolution.errormodel;
-    exports NestedBD.evolution.likelihood;
-    exports NestedBD.evolution.substitutionmodel;
+    exports nestedBD.evolution.errormodel;
+    exports nestedBD.evolution.likelihood;
+    exports nestedBD.evolution.substitutionmodel;
 
     provides beast.base.core.BEASTInterface with
-        NestedBD.evolution.substitutionmodel.BD,
-        NestedBD.evolution.likelihood.DiploidOriginLikelihood,
-        NestedBD.evolution.likelihood.DiploidOriginLikelihoodWithError,
-        NestedBD.evolution.likelihood.TreeLikelihoodWithError,
-        NestedBD.evolution.errormodel.DiscreteGaussianErrorModel,
-        NestedBD.evolution.errormodel.NegativeBinomialErrorModel,
-        NestedBD.evolution.errormodel.poissonErrorModel,
-        NestedBD.evolution.errormodel.NormalErrorModel,
-        NestedBD.evolution.errormodel.readcountErrorModel;
+        nestedBD.evolution.substitutionmodel.BD,
+        nestedBD.evolution.likelihood.DiploidOriginLikelihood,
+        nestedBD.evolution.likelihood.DiploidOriginLikelihoodWithError,
+        nestedBD.evolution.likelihood.TreeLikelihoodWithError,
+        nestedBD.evolution.errormodel.DiscreteGaussianErrorModel,
+        nestedBD.evolution.errormodel.NegativeBinomialErrorModel,
+        nestedBD.evolution.errormodel.poissonErrorModel,
+        nestedBD.evolution.errormodel.NormalErrorModel,
+        nestedBD.evolution.errormodel.readcountErrorModel;
 }

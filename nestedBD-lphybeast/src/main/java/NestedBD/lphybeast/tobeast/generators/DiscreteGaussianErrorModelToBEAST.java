@@ -1,7 +1,7 @@
-package NestedBD.lphybeast.tobeast.generators;
+package nestedBD.lphybeast.tobeast.generators;
 
-import NestedBD.evolution.likelihood.DiploidOriginLikelihoodWithError;
-import NestedBD.evolution.substitutionmodel.BD;
+import nestedBD.evolution.likelihood.DiploidOriginLikelihoodWithError;
+import nestedBD.evolution.substitutionmodel.BD;
 import beast.base.core.BEASTInterface;
 import beast.base.evolution.datatype.DataType;
 import beast.base.spec.evolution.sitemodel.SiteModel;
@@ -16,18 +16,18 @@ import lphy.core.model.Value;
 import lphybeast.BEASTContext;
 import lphybeast.GeneratorToBEAST;
 import lphybeast.tobeast.generators.PhyloCTMCToBEAST;
-import phylonco.lphy.evolution.copynumbermodel.*;
-import NestedBD.evolution.errormodel.DiscreteGaussianErrorModel;
+import nestedBD.lphy.evolution.copynumbermodel.*;
+import nestedBD.evolution.errormodel.DiscreteGaussianErrorModel;
 
 import java.util.Objects;
 
 public class DiscreteGaussianErrorModelToBEAST
-        implements GeneratorToBEAST<phylonco.lphy.evolution.copynumbermodel.DiscreteGaussianErrorModel,
+        implements GeneratorToBEAST<nestedBD.lphy.evolution.copynumbermodel.DiscreteGaussianErrorModel,
         DiploidOriginLikelihoodWithError> {
 
     @Override
     public DiploidOriginLikelihoodWithError generatorToBEAST(
-            phylonco.lphy.evolution.copynumbermodel.DiscreteGaussianErrorModel generator,
+            nestedBD.lphy.evolution.copynumbermodel.DiscreteGaussianErrorModel generator,
             BEASTInterface value,
             BEASTContext context) {
 
@@ -64,7 +64,7 @@ public class DiscreteGaussianErrorModelToBEAST
      * The PhyloDiscrete contains the tree and the CopyNumberBD model.
      */
     private PhyloDiscrete findPhyloDiscrete(
-            phylonco.lphy.evolution.copynumbermodel.DiscreteGaussianErrorModel generator) {
+            nestedBD.lphy.evolution.copynumbermodel.DiscreteGaussianErrorModel generator) {
 
         for (GraphicalModelNode<?> input : Objects.requireNonNull(generator.getInputs())) {
             if (input instanceof Value && input.value() instanceof IntegerCharacterMatrix) {
@@ -97,7 +97,7 @@ public class DiscreteGaussianErrorModelToBEAST
      * Create the BEAST2 DiscreteGaussianErrorModel with appropriate parameters.
      */
     private DiscreteGaussianErrorModel createBEASTErrorModel(
-            phylonco.lphy.evolution.copynumbermodel.DiscreteGaussianErrorModel generator,
+            nestedBD.lphy.evolution.copynumbermodel.DiscreteGaussianErrorModel generator,
             beast.base.evolution.alignment.Alignment errAlignment,
             int nstate,
             BEASTContext context) {
@@ -183,7 +183,7 @@ public class DiscreteGaussianErrorModelToBEAST
      * Remove the original alignment and likelihood that are replaced by the error model version.
      */
     private void removeOriginalLikelihood(
-            phylonco.lphy.evolution.copynumbermodel.DiscreteGaussianErrorModel generator,
+            nestedBD.lphy.evolution.copynumbermodel.DiscreteGaussianErrorModel generator,
             PhyloDiscrete phyloDiscrete,
             BEASTContext context) {
 
@@ -208,8 +208,8 @@ public class DiscreteGaussianErrorModelToBEAST
     }
 
     @Override
-    public Class<phylonco.lphy.evolution.copynumbermodel.DiscreteGaussianErrorModel> getGeneratorClass() {
-        return phylonco.lphy.evolution.copynumbermodel.DiscreteGaussianErrorModel.class;
+    public Class<nestedBD.lphy.evolution.copynumbermodel.DiscreteGaussianErrorModel> getGeneratorClass() {
+        return nestedBD.lphy.evolution.copynumbermodel.DiscreteGaussianErrorModel.class;
     }
 
     @Override

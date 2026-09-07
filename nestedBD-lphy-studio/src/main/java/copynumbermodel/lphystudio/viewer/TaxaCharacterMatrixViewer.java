@@ -2,7 +2,7 @@ package copynumbermodel.lphystudio.viewer;
 
 import lphy.core.model.Value;
 import lphystudio.app.graphicalmodelpanel.viewer.Viewer;
-import phylonco.lphy.evolution.copynumbermodel.IntegerCharacterMatrix;
+import nestedBD.lphy.evolution.copynumbermodel.IntegerCharacterMatrix;
 import javax.swing.*;
 
 public class TaxaCharacterMatrixViewer implements Viewer {

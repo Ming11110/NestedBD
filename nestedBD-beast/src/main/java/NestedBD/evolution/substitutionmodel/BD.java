@@ -1,4 +1,4 @@
-package NestedBD.evolution.substitutionmodel;
+package nestedBD.evolution.substitutionmodel;
 
 import beast.base.evolution.datatype.DataType;
 import beast.base.evolution.datatype.IntegerData;

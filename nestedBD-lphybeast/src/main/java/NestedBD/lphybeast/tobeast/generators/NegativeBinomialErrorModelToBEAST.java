@@ -1,7 +1,7 @@
-package NestedBD.lphybeast.tobeast.generators;
+package nestedBD.lphybeast.tobeast.generators;
 
-import NestedBD.evolution.likelihood.DiploidOriginLikelihoodWithError;
-import NestedBD.evolution.substitutionmodel.BD;
+import nestedBD.evolution.likelihood.DiploidOriginLikelihoodWithError;
+import nestedBD.evolution.substitutionmodel.BD;
 import beast.base.core.BEASTInterface;
 import beast.base.evolution.datatype.DataType;
 import beast.base.spec.evolution.sitemodel.SiteModel;
@@ -16,18 +16,18 @@ import lphy.core.model.Value;
 import lphybeast.BEASTContext;
 import lphybeast.GeneratorToBEAST;
 import lphybeast.tobeast.generators.PhyloCTMCToBEAST;
-import phylonco.lphy.evolution.copynumbermodel.*;
-import NestedBD.evolution.errormodel.NegativeBinomialErrorModel;
+import nestedBD.lphy.evolution.copynumbermodel.*;
+import nestedBD.evolution.errormodel.NegativeBinomialErrorModel;
 
 import java.util.Objects;
 
 public class NegativeBinomialErrorModelToBEAST
-        implements GeneratorToBEAST<phylonco.lphy.evolution.copynumbermodel.NegativeBinomialErrorModel,
+        implements GeneratorToBEAST<nestedBD.lphy.evolution.copynumbermodel.NegativeBinomialErrorModel,
         DiploidOriginLikelihoodWithError> {
 
     @Override
     public DiploidOriginLikelihoodWithError generatorToBEAST(
-            phylonco.lphy.evolution.copynumbermodel.NegativeBinomialErrorModel generator,
+            nestedBD.lphy.evolution.copynumbermodel.NegativeBinomialErrorModel generator,
             BEASTInterface value,
             BEASTContext context) {
 
@@ -72,7 +72,7 @@ public class NegativeBinomialErrorModelToBEAST
      * Find the PhyloDiscrete generator by tracing back through the alignment input
      */
     private PhyloDiscrete findPhyloDiscrete(
-            phylonco.lphy.evolution.copynumbermodel.NegativeBinomialErrorModel generator) {
+            nestedBD.lphy.evolution.copynumbermodel.NegativeBinomialErrorModel generator) {
 
         for (GraphicalModelNode<?> input : Objects.requireNonNull(generator.getInputs())) {
             if (input instanceof Value && input.value() instanceof IntegerCharacterMatrix) {
@@ -145,7 +145,7 @@ public class NegativeBinomialErrorModelToBEAST
      * Remove the original alignment and likelihood that are replaced by the error model version
      */
     private void removeOriginalLikelihood(
-            phylonco.lphy.evolution.copynumbermodel.NegativeBinomialErrorModel generator,
+            nestedBD.lphy.evolution.copynumbermodel.NegativeBinomialErrorModel generator,
             PhyloDiscrete phyloDiscrete,
             BEASTContext context) {
 
@@ -165,8 +165,8 @@ public class NegativeBinomialErrorModelToBEAST
     }
 
     @Override
-    public Class<phylonco.lphy.evolution.copynumbermodel.NegativeBinomialErrorModel> getGeneratorClass() {
-        return phylonco.lphy.evolution.copynumbermodel.NegativeBinomialErrorModel.class;
+    public Class<nestedBD.lphy.evolution.copynumbermodel.NegativeBinomialErrorModel> getGeneratorClass() {
+        return nestedBD.lphy.evolution.copynumbermodel.NegativeBinomialErrorModel.class;
     }
 
     @Override

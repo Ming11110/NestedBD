@@ -71,18 +71,7 @@
                 <version>${junit.version}</version>
                 <scope>test</scope>
             </dependency>
-         <!-- 
-   <dependency>
-                <groupId>org.hipparchus</groupId>
-                <artifactId>hipparchus-core</artifactId>
-                <version>${hipparchus.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.wendykierp</groupId>
-                <artifactId>JTransforms</artifactId>
-                <version>${jtransforms.version}</version>
-            </dependency>
- -->
+
         </dependencies>
     </dependencyManagement>
 

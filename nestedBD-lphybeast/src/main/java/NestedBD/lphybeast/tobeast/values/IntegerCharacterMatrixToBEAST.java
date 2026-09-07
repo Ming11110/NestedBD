@@ -1,11 +1,11 @@
-package NestedBD.lphybeast.tobeast.values;
+package nestedBD.lphybeast.tobeast.values;
 
 import beast.base.evolution.alignment.Alignment;
 import beast.base.evolution.alignment.Sequence;
 import lphy.core.model.Value;
 import lphybeast.BEASTContext;
 import lphybeast.ValueToBEAST;
-import phylonco.lphy.evolution.copynumbermodel.*;
+import nestedBD.lphy.evolution.copynumbermodel.*;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,6 +1,6 @@
-package NestedBD.lphybeast.tobeast.generators;
+package nestedBD.lphybeast.tobeast.generators;
 
-import NestedBD.evolution.likelihood.DiploidOriginLikelihood;
+import nestedBD.evolution.likelihood.DiploidOriginLikelihood;
 import beast.base.core.BEASTInterface;
 import beast.base.evolution.substitutionmodel.SubstitutionModel;
 import beast.base.spec.inference.parameter.IntScalarParam;
@@ -12,9 +12,9 @@ import lphy.core.model.Value;
 import lphybeast.BEASTContext;
 import lphybeast.GeneratorToBEAST;
 import lphybeast.tobeast.generators.PhyloCTMCToBEAST;
-import phylonco.lphy.evolution.copynumbermodel.CopyNumberBD;
-import phylonco.lphy.evolution.copynumbermodel.MarkovTraitEvolution;
-import phylonco.lphy.evolution.copynumbermodel.PhyloDiscrete;
+import nestedBD.lphy.evolution.copynumbermodel.CopyNumberBD;
+import nestedBD.lphy.evolution.copynumbermodel.MarkovTraitEvolution;
+import nestedBD.lphy.evolution.copynumbermodel.PhyloDiscrete;
 
 /**
  * BEAST converter for PhyloDiscrete models.

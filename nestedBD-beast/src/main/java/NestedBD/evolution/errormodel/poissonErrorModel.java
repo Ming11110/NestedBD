@@ -1,4 +1,4 @@
-package NestedBD.evolution.errormodel;
+package nestedBD.evolution.errormodel;
 import beast.base.inference.parameter.IntegerParameter;
 //import org.apache.commons.math.distribution.PoissonDistributionImpl;
 import org.apache.commons.statistics.distribution.PoissonDistribution;

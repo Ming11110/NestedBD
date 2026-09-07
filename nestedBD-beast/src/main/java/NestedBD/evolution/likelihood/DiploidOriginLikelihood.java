@@ -1,4 +1,4 @@
-package NestedBD.evolution.likelihood;
+package nestedBD.evolution.likelihood;
 
 import beast.base.core.Input;
 import beast.base.evolution.likelihood.BeerLikelihoodCore;

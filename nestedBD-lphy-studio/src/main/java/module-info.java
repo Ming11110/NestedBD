@@ -1,9 +1,9 @@
 import copynumbermodel.lphystudio.viewer.TaxaCharacterMatrixViewer;
 
-module phylonco.lphy.studio {
+module nestedBD.lphy.studio {
 
     requires transitive lphystudio;
-    requires phylonco.lphy;
+    requires nestedBD.lphy;
 
     // Viewer SPI
     uses lphystudio.app.graphicalmodelpanel.viewer.Viewer;

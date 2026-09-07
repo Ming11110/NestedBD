@@ -1,4 +1,4 @@
-package phylonco.lphy.evolution.copynumbermodel;
+package nestedBD.lphy.evolution.copynumbermodel;
 
 import lphy.core.model.GenerativeDistribution;
 import lphy.core.model.RandomVariable;

@@ -1,4 +1,4 @@
-package phylonco.lphy.evolution.copynumbermodel;
+package nestedBD.lphy.evolution.copynumbermodel;
 
 import lphy.base.evolution.Taxa;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,4 +1,4 @@
-package phylonco.lphy.evolution.copynumbermodel;
+package nestedBD.lphy.evolution.copynumbermodel;
 
 import java.io.*;
 import java.util.ArrayList;

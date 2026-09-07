@@ -1,4 +1,4 @@
-package phylonco.lphy.evolution.copynumbermodel;
+package nestedBD.lphy.evolution.copynumbermodel;
 
 import org.junit.jupiter.api.Test;
 import lphy.core.model.Value;

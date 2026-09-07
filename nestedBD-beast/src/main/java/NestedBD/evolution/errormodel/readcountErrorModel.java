@@ -1,4 +1,4 @@
-package NestedBD.evolution.errormodel;
+package nestedBD.evolution.errormodel;
 import beast.base.inference.parameter.IntegerParameter;
 import org.apache.commons.numbers.gamma.LogGamma;
 import java.lang.Math;

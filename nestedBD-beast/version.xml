@@ -4,20 +4,20 @@
 
 	<service type="beast.base.core.BEASTInterface">
 		<!-- Likelihood classes -->
-		<provider classname="NestedBD.evolution.likelihood.DiploidOriginLikelihood"/>
-		<provider classname="NestedBD.evolution.likelihood.DiploidOriginLikelihoodWithError"/>
-		<provider classname="NestedBD.evolution.likelihood.TreeLikelihoodWithError"/>
+		<provider classname="nestedBD.evolution.likelihood.DiploidOriginLikelihood"/>
+		<provider classname="nestedBD.evolution.likelihood.DiploidOriginLikelihoodWithError"/>
+		<provider classname="nestedBD.evolution.likelihood.TreeLikelihoodWithError"/>
 
 		<!-- Error model classes -->
-		<provider classname="NestedBD.evolution.errormodel.ErrorModel"/>
-		<provider classname="NestedBD.evolution.errormodel.ErrorModelBase"/>
-		<provider classname="NestedBD.evolution.errormodel.NormalErrorModel"/>
-		<provider classname="NestedBD.evolution.errormodel.poissonErrorModel"/>
-		<provider classname="NestedBD.evolution.errormodel.readcountErrorModel"/>
-		<provider classname="NestedBD.evolution.errormodel.NegativeBinomialErrorModel"/>
-		<provider classname="NestedBD.evolution.errormodel.DiscreteGaussianErrorModel"/>
+		<provider classname="nestedBD.evolution.errormodel.ErrorModel"/>
+		<provider classname="nestedBD.evolution.errormodel.ErrorModelBase"/>
+		<provider classname="nestedBD.evolution.errormodel.NormalErrorModel"/>
+		<provider classname="nestedBD.evolution.errormodel.poissonErrorModel"/>
+		<provider classname="nestedBD.evolution.errormodel.readcountErrorModel"/>
+		<provider classname="nestedBD.evolution.errormodel.NegativeBinomialErrorModel"/>
+		<provider classname="nestedBD.evolution.errormodel.DiscreteGaussianErrorModel"/>
 
 		<!-- Substitution model -->
-		<provider classname="NestedBD.evolution.substitutionmodel.BD"/>
+		<provider classname="nestedBD.evolution.substitutionmodel.BD"/>
 	</service>
 </package>

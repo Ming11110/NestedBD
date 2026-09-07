@@ -1,4 +1,4 @@
-package phylonco.lphy.evolution.copynumbermodel;
+package nestedBD.lphy.evolution.copynumbermodel;
 
 import lphy.base.evolution.Taxa;
 import lphy.base.function.io.ReaderConst;

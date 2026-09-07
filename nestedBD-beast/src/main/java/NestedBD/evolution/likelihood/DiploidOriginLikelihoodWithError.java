@@ -1,4 +1,4 @@
-package NestedBD.evolution.likelihood;
+package nestedBD.evolution.likelihood;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -9,9 +9,9 @@ import beast.base.core.Input;
 import beast.base.evolution.alignment.Alignment;
 import beast.base.evolution.datatype.IntegerData;
 import beast.base.evolution.tree.Node;
-import NestedBD.evolution.errormodel.ErrorModel;
-import NestedBD.evolution.errormodel.poissonErrorModel;
-import NestedBD.evolution.errormodel.readcountErrorModel;
+import nestedBD.evolution.errormodel.ErrorModel;
+import nestedBD.evolution.errormodel.poissonErrorModel;
+import nestedBD.evolution.errormodel.readcountErrorModel;
 import beast.base.evolution.tree.TreeInterface;
 
 @Description("Tree likelihood calculation using DiploidOriginLikelihood with error models")
@@ -173,7 +173,7 @@ public class DiploidOriginLikelihoodWithError extends DiploidOriginLikelihood {
 	protected boolean requiresRecalculation() {
 		boolean needs = super.requiresRecalculation();
 
-		if (tipsNeedRebuild || errorModel.isDirtyCalculation()) {
+		if (tipsNeedRebuild || errorModel.somethingIsDirty()) {
 			errorModel.setUpdateFlag(true);
 			errorModel.setupErrorMatrix();
 			updateAllLeafPartials();
