@@ -1,0 +1,24 @@
+// Example: NestedBD copy-number birth-death inference under a Yule tree prior
+//          with an uncorrelated relaxed clock (UCLN, mean 1).
+// Data:    GINKGO-format copy-number profile.
+
+data {
+  D = readCopyProfile(file="examples/data/copyNumberSim_ginkgo.txt");
+  nsites = nchar(D);
+  taxa = D.taxa();
+}
+model {
+  // Tree prior (Yule)
+  λ ~ LogNormal(meanlog=1.0, sdlog=1.5);
+  ψ ~ Yule(lambda=λ, taxa=taxa);
+
+  // Relaxed clock (UCLN)
+  clockSD ~ LogNormal(meanlog=-1.5, sdlog=0.75);
+  branchRates ~ UCLN_Mean1(uclnSigma=clockSD, tree=ψ);
+
+  // CNV birth-death model 
+  cnvModel = CopyNumberBD(bdRate=1.0, rootState=2, nstate=15);
+  D ~ PhyloDiscrete(L=nsites, evolutionModel=cnvModel,
+                    branchRates=branchRates, tree=ψ);
+
+}
