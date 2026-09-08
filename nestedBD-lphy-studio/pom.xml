@@ -28,6 +28,12 @@
             <artifactId>lphy-studio</artifactId>
             <version>${lphy.vision}</version>
         </dependency>
+        
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
