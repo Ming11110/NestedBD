@@ -28,18 +28,6 @@
             <scope>test</scope>
         </dependency>
 
-<!-- 
-        <dependency>
-            <groupId>org.hipparchus</groupId>
-            <artifactId>hipparchus-core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.wendykierp</groupId>
-            <artifactId>JTransforms</artifactId>
-        </dependency>
- -->
-
         <dependency>
             <groupId>io.github.Ming11110</groupId>
             <artifactId>nestedBD-beast</artifactId>
