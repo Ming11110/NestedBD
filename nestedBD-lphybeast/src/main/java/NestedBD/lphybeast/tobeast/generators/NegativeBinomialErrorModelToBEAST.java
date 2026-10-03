@@ -121,7 +121,7 @@ public class NegativeBinomialErrorModelToBEAST
         PhyloCTMCToBEAST.constructTreeAndBranchRate(phyloDiscrete, likelihoodWithError, context, false);
 
         // Set origin time
-        likelihoodWithError.setInputValue("origtime", new RealScalarParam<>(0.0, NonNegativeReal.INSTANCE));
+        PhyloDiscreteToBEAST.setOrigtime(phyloDiscrete, likelihoodWithError, context);
 
         // Set nstate
         likelihoodWithError.setInputValue("nstates", new IntScalarParam<>(nstate, PositiveInt.INSTANCE));

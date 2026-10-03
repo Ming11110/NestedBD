@@ -29,6 +29,18 @@ public class PhyloDiscreteToBEAST implements GeneratorToBEAST<PhyloDiscrete, Dip
         PhyloCTMCToBEAST.constructTreeAndBranchRate(phyloDiscrete, likelihood, context, false);
     }
 
+    // sets origtime from the LPhy model if given, otherwise fixes it at 0.0 (root = diploid).
+    // Shared with the error-model converters, which also build DiploidOriginLikelihood(WithError).
+    public static void setOrigtime(PhyloDiscrete phyloDiscrete, DiploidOriginLikelihood likelihood, BEASTContext context) {
+        Value<Number> origtime = phyloDiscrete.getOrigtime();
+        if (origtime != null) {
+            likelihood.setInputValue("origtime", context.getBEASTObject(origtime));
+        } else {
+            likelihood.setInputValue("origtime", new RealScalarParam<>(0.0, NonNegativeReal.INSTANCE));
+        }
+    }
+
+
     @Override
     public DiploidOriginLikelihood generatorToBEAST(PhyloDiscrete generator, BEASTInterface value, BEASTContext context) {
         // Check type first
@@ -43,7 +55,7 @@ public class PhyloDiscreteToBEAST implements GeneratorToBEAST<PhyloDiscrete, Dip
         constructTreeAndBranchRate(generator, likelihood, context);
 
         // Set origin time
-        likelihood.setInputValue("origtime", new RealScalarParam<>(0.0, NonNegativeReal.INSTANCE));
+        setOrigtime(generator, likelihood, context);
 
         // Get the CopyNumberBD model from the generator
         Value<MarkovTraitEvolution<Integer>> modelValue = generator.getModel();

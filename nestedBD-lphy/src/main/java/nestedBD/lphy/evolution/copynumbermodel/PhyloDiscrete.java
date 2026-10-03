@@ -33,12 +33,14 @@ public class PhyloDiscrete implements GenerativeDistribution<IntegerCharacterMat
     public static final String lengthParam = "L";
     public static final String muParam = "mu";
     public static final String branchRatesParam = "branchRates";
+    public static final String origtimeParam = "origtime";
     private Value<MarkovTraitEvolution<Integer>> model;
     private Value<TimeTree> tree;
     private Value<Integer> L;
     private int[][] data;
     private Value<Number> clockRate;
     private Value<Double[]> branchRates;
+    private Value<Number> origtime;
     private Value<IntegerCharacterMatrix> realData;
 
     public PhyloDiscrete(
@@ -48,8 +50,9 @@ public class PhyloDiscrete implements GenerativeDistribution<IntegerCharacterMat
             @ParameterInfo(name = muParam, narrativeName = "molecular clock rate", description = "the clock rate. Default value is 1.0.", optional = true)
             Value<Number> mu,
             @ParameterInfo(name = branchRatesParam, description = "a rate for each branch in the tree. Branch rates are assumed to be 1.0 otherwise.", optional = true)
-            Value<Double[]> branchRates)
-    {
+            Value<Double[]> branchRates,
+            @ParameterInfo(name = origtimeParam, narrativeName = "diploid origin distance", description = "distance from the diploid ancestor to the tree root. Default value is 0.0.", optional = true)
+            Value<Number> origtime) {
 
         super();
 
@@ -57,6 +60,11 @@ public class PhyloDiscrete implements GenerativeDistribution<IntegerCharacterMat
         this.tree = tree;
         this.L = L;
         this.clockRate = mu;
+        this.origtime = origtime;
+        this.branchRates = branchRates;
+
+        int numNodes = tree.value().nodeCount();
+        this.data = new int[numNodes][L.value()];
 
         Double[] treeBranchRates = tree.value().getBranchRates();
 
@@ -68,15 +76,16 @@ public class PhyloDiscrete implements GenerativeDistribution<IntegerCharacterMat
                 this.branchRates = new Value<>("branchRates", treeBranchRates);
             }
         }
-        this.branchRates = branchRates;
-        int numNodes = tree.value().nodeCount();
-        this.data = new int[numNodes][L.value()];
     }
 
     // Initializes the root state.
     private void initializeRoot(TimeTreeNode rootNode) {
-        int rootState = model.value().sampleAncestralTrait();
+        double d = (origtime == null) ? 0.0 : ValueUtils.doubleValue(origtime);
         for (int i = 0; i < L.value(); i++) {
+            int rootState = model.value().sampleAncestralTrait();          // diploid (2)
+            if (d > 0) {
+                rootState = model.value().evolveTraitOverTime(rootState, d);
+            }
             data[rootNode.getIndex()][i] = rootState;
         }
     }
@@ -163,6 +172,7 @@ public class PhyloDiscrete implements GenerativeDistribution<IntegerCharacterMat
         map.put(lengthParam, L);
         if (clockRate != null) map.put(muParam, clockRate);
         if (branchRates != null) map.put(branchRatesParam, branchRates);
+        if (origtime != null) map.put(origtimeParam, origtime);
         return map;
     }
 
@@ -178,6 +188,8 @@ public class PhyloDiscrete implements GenerativeDistribution<IntegerCharacterMat
             clockRate = value;
         } else if (paramName.equals(branchRatesParam)) {
             branchRates = value;
+        } else if (paramName.equals(origtimeParam)) {
+            origtime = value;
         } else {
             throw new RuntimeException("Unrecognised parameter name: " + paramName);
         }
@@ -202,6 +214,10 @@ public class PhyloDiscrete implements GenerativeDistribution<IntegerCharacterMat
 
     public Value<Double[]> getBranchRates() {
         return branchRates;
+    }
+
+    public Value<Number> getOrigtime() {
+        return origtime;
     }
 }
 
